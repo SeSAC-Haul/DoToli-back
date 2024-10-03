@@ -53,10 +53,7 @@ public class TaskService {
 	 */
 	@Transactional
 	public void updateTask(Long targetId, TaskRequestDto dto, Long currentMemberId) {
-		Task task = taskRepository.findById(targetId)
-				.orElseThrow(TaskNotFoundException::new);
-
-		validateTaskOwnership(task.getMember().getId(), currentMemberId);
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
 		task.updateContent(dto.getContent());
 	}
@@ -66,10 +63,7 @@ public class TaskService {
 	 */
 	@Transactional
 	public void deleteTask(Long targetId, Long currentMemberId) {
-		Task task = taskRepository.findById(targetId)
-				.orElseThrow(TaskNotFoundException::new);
-
-		validateTaskOwnership(task.getMember().getId(), currentMemberId);
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
 		taskRepository.delete(task);
 	}
@@ -79,12 +73,18 @@ public class TaskService {
 	 */
 	@Transactional
 	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
-		Task task = taskRepository.findById(targetId)
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+
+		task.updateDone(dto.isDone());
+	}
+
+	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
+		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
 
 		validateTaskOwnership(task.getMember().getId(), currentMemberId);
-
-		task.updateDone(dto.isDone());
+		
+		return task;
 	}
 
 	private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
