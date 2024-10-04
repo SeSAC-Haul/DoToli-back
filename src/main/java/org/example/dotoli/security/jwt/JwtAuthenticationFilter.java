@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -53,12 +54,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		try {
 			final String jwt = authHeader.substring(7);
-			final String loginId = jwtProvider.extractUsername(jwt);
+			final String email = jwtProvider.extractUsername(jwt);
 
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-			if (loginId != null && authentication == null) {
-				UserDetails userDetails = this.userDetailsService.loadUserByUsername(loginId);
+			if (email != null && authentication == null) {
+				UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
 				if (jwtProvider.isTokenValid(jwt, userDetails)) {
 					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -74,23 +75,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			filterChain.doFilter(request, response);
 		} catch (MalformedJwtException e) {
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token format");
+			sendErrorResponse(response, "Invalid token format");
 		} catch (ExpiredJwtException e) {
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired");
+			sendErrorResponse(response, "Token has expired");
 		} catch (SignatureException e) {
-			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token signature");
-		} catch (Exception e) {
-			sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+			sendErrorResponse(response, "Invalid token signature");
+		} catch (JwtException e) {
+			sendErrorResponse(response, "JWT error: " + e.getMessage());
 		}
 	}
 
-	private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
-		response.setStatus(status);
+	private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
 
 		Map<String, Object> errorDetails = new HashMap<>();
-		errorDetails.put("status", status);
+		errorDetails.put("status", HttpServletResponse.SC_UNAUTHORIZED);
 		errorDetails.put("message", message);
 
 		ObjectMapper mapper = new ObjectMapper();
