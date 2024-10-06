@@ -32,8 +32,8 @@ public class Member {
 		this.nickname = nickname;
 	}
 
-	public static Member createNew(String email, String password, String name) {
-		return new Member(email, password, name);
+	public static Member createNew(String email, String password, String nickname) {
+		return new Member(email, password, nickname);
 	}
 
 }
