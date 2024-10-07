@@ -47,6 +47,7 @@ public class AuthenticationService {
 	 * 로그인
 	 */
 	public CustomUserDetails authenticate(SignInRequestDto dto) {
+		// TODO 로그인 실패시 발생하는 예외처리
 		Authentication authenticate = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
 		);
