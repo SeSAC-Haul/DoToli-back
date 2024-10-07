@@ -35,7 +35,6 @@ public class AuthenticationService {
 	@Transactional
 	public Long saveMember(SignUpRequestDto dto) {
 		checkDuplicateEmail(dto.getEmail());
-
 		Member member = Member.createNew(
 				dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getNickname()
 		);
