@@ -1,9 +1,9 @@
 ---
-name: "[FEAT]"
+name: DoToli 이슈 템플릿
 about: Suggest an idea for this project
 title: ''
 labels: ''
-assignees: ''
+assignees: hyerin315, cuteJJong, Chan-GN, liimjiin
 
 ---
 
