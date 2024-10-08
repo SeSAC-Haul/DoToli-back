@@ -29,14 +29,22 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Member member;
 
-	private Task(String content, boolean done, Member member) {
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Team team;
+
+	private Task(String content, Member member, Team team) {
 		this.content = content;
-		this.done = done;
+		this.done = false;
 		this.member = member;
+		this.team = team;
 	}
 
-	public static Task createNew(String content, Member member) {
-		return new Task(content, false, member);
+	public static Task createPersonalTask(String content, Member member) {
+		return new Task(content, member, null);
+	}
+
+	public static Task createTeamTask(String content, Member member, Team team) {
+		return new Task(content, member, team);
 	}
 
 	public void updateContent(String content) {
