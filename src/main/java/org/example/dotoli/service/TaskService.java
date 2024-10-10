@@ -1,5 +1,8 @@
 package org.example.dotoli.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
 import org.example.dotoli.domain.Member;
@@ -94,4 +97,14 @@ public class TaskService {
 		}
 	}
 
+	/**
+	 *  할 일 검색
+	 */
+	@Transactional(readOnly = true)
+	public List<TaskResponseDto> searchTaskByContent(Long memberId, String content) {
+		List<Task> tasks = taskRepository.findByContentContainingAndMemberId(memberId, content);
+		return tasks.stream()
+			.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
+			.collect(Collectors.toList());
+	}
 }
