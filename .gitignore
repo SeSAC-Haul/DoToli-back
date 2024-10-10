@@ -6,3 +6,6 @@ target/
 
 ### Properties ###
 *.properties
+
+### Mac OS ###
+.DS_Store
