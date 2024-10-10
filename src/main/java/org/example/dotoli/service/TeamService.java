@@ -1,11 +1,13 @@
 package org.example.dotoli.service;
 
+import org.example.dotoli.config.error.exception.DuplicateTeamNameException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
 import org.example.dotoli.dto.team.TeamRequestDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TeamMemberRepository;
+import org.example.dotoli.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TeamService {
 
+	private final TeamRepository teamRepository;
+
 	private final TeamMemberRepository teamMemberRepository;
 
 	private final MemberRepository memberRepository;
@@ -28,6 +32,8 @@ public class TeamService {
 	 */
 	@Transactional
 	public Long createTeam(Long memberId, TeamRequestDto dto) {
+		checkDuplicateTeamName(dto.getTeamName());
+
 		// Member 엔티티의 존재가 확실하므로 getReferenceById 메서드 사용
 		Member member = memberRepository.getReferenceById(memberId);
 
@@ -37,6 +43,15 @@ public class TeamService {
 		teamMemberRepository.save(teamMember);
 
 		return teamMember.getId();
+	}
+
+	/**
+	 * 팀 이름 중복 체크
+	 */
+	private void checkDuplicateTeamName(String teamName) {
+		if (teamRepository.existsByTeamName(teamName)) {
+			throw new DuplicateTeamNameException();
+		}
 	}
 
 }
