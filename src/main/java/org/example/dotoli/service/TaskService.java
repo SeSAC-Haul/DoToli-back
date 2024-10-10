@@ -98,4 +98,9 @@ public class TaskService {
         return taskRepository.countAllTasksByMemberId(memberId);
     }
 
+    @Transactional(readOnly = true)
+    public Long getCompletedTaskCountForMember(Long memberId) {
+        return taskRepository.countCompletedTasksByMemberId(memberId);
+    }
+
 }
