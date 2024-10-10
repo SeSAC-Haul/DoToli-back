@@ -12,10 +12,15 @@ import org.springframework.data.repository.query.Param;
  */
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-	@Query("SELECT t " +
-			"FROM Task t " +
-			"WHERE t.member.id = :memberId " +
-			"ORDER BY t.done ASC, t.id DESC")
-	List<Task> findAllSorted(@Param("memberId") Long memberId);
+    @Query("SELECT t " +
+            "FROM Task t " +
+            "WHERE t.member.id = :memberId " +
+            "ORDER BY t.done ASC, t.id DESC")
+    List<Task> findAllSorted(@Param("memberId") Long memberId);
+
+    @Query("SELECT COUNT(t) " +
+            "FROM Task t " +
+            "WHERE t.member.id = :memberId")
+    Long countAllTasksByMemberId(@Param("memberId") Long memberId);
 
 }
