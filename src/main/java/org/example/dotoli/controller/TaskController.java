@@ -87,7 +87,7 @@ public class TaskController {
         return ResponseEntity.ok(totalCount);
     }
 
-    @GetMapping("/count/done")
+    @GetMapping("/mypage/count")
     public ResponseEntity<Long> getDoneTaskCount(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
