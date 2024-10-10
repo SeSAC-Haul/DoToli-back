@@ -103,4 +103,15 @@ public class TaskService {
         return taskRepository.countCompletedTasksByMemberId(memberId);
     }
 
+    public Long calculateCompletionRate(Long memberId) {
+        long totalTasks = getTotalTaskCountForMember(memberId);
+        long completedTasks = getCompletedTaskCountForMember(memberId);
+
+        if (totalTasks == 0) {
+            return 0L;
+        }
+
+        return (completedTasks * 100) / totalTasks;
+    }
+
 }
