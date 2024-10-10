@@ -1,12 +1,11 @@
 package org.example.dotoli.controller;
 
-import java.util.List;
-
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.TaskService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -33,24 +33,26 @@ public class TaskController {
 
 	@PostMapping
 	public ResponseEntity<Long> addNewTask(
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
+		@RequestBody @Valid TaskRequestDto dto,
+		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
 	}
 
+	//
 	@GetMapping
-	public ResponseEntity<List<TaskResponseDto>> getAllTask(
-			@AuthenticationPrincipal CustomUserDetails userDetails
+	public ResponseEntity<Page<TaskResponseDto>> getAllTask(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(defaultValue = "0") int page
 	) {
-		return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId()));
+		return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId(), page));
 	}
 
 	@PutMapping("/{targetId}")
 	public ResponseEntity<Void> updateTask(
-			@PathVariable Long targetId,
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
+		@PathVariable Long targetId,
+		@RequestBody @Valid TaskRequestDto dto,
+		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		taskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
@@ -59,9 +61,9 @@ public class TaskController {
 
 	@PutMapping("/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
-			@PathVariable Long targetId,
-			@RequestBody @Valid ToggleRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
+		@PathVariable Long targetId,
+		@RequestBody @Valid ToggleRequestDto dto,
+		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
@@ -70,8 +72,8 @@ public class TaskController {
 
 	@DeleteMapping("/{targetId}")
 	public ResponseEntity<Void> deleteTask(
-			@PathVariable Long targetId,
-			@AuthenticationPrincipal CustomUserDetails userDetails
+		@PathVariable Long targetId,
+		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		taskService.deleteTask(targetId, userDetails.getMember().getId());
 
