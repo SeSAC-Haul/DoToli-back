@@ -1,7 +1,5 @@
 package org.example.dotoli.service;
 
-import java.util.List;
-
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
 import org.example.dotoli.domain.Member;
@@ -11,6 +9,9 @@ import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,10 +43,10 @@ public class TaskService {
 	/**
 	 * 할 일 목록 조회
 	 */
-	public List<TaskResponseDto> findAll(Long currentMemberId) {
-		return taskRepository.findAllSorted(currentMemberId).stream()
-				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
-				.toList();
+	public Page<TaskResponseDto> findAll(Long currentMemberId, int page) {
+		Pageable pageable = PageRequest.of(page, 5);
+		return taskRepository.findAllSorted(currentMemberId, pageable)
+			.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()));
 	}
 
 	/**
@@ -80,10 +81,10 @@ public class TaskService {
 
 	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
 		Task task = taskRepository.findById(taskId)
-				.orElseThrow(TaskNotFoundException::new);
+			.orElseThrow(TaskNotFoundException::new);
 
 		validateTaskOwnership(task.getMember().getId(), currentMemberId);
-		
+
 		return task;
 	}
 
