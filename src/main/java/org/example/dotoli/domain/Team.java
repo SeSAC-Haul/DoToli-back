@@ -9,32 +9,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 회원 정보를 표현하는 엔티티 클래스
+ * 팀 정보를 표현하는 엔티티 클래스
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Member {
+public class Team {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String email;
+	private String teamName;
 
-	private String password;
-
-	private String nickname;
-
-	private Member(String email, String password, String nickname) {
-		this.email = email;
-		this.password = password;
-		this.nickname = nickname;
+	private Team(String teamName) {
+		this.teamName = teamName;
 	}
 
-	public static Member createNew(String email, String password, String nickname) {
-		return new Member(email, password, nickname);
+	public static Team createNew(String teamName) {
+		return new Team(teamName);
 	}
 
 }
-
