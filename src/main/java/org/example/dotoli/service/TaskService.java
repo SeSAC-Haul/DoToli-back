@@ -93,4 +93,9 @@ public class TaskService {
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public Long getTotalTaskCountForMember(Long memberId){
+		return taskRepository.countAllTasksByMemberId(memberId);
+	}
+
 }
