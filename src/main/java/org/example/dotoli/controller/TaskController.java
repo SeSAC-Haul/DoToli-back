@@ -9,6 +9,7 @@ import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,6 +85,14 @@ public class TaskController {
     ) {
         Long totalCount = taskService.getTotalTaskCountForMember(userDetails.getMember().getId());
         return ResponseEntity.ok(totalCount);
+    }
+
+    @GetMapping("/count/done")
+    public ResponseEntity<Long> getDoneTaskCount(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long doneCount = taskService.getCompletedTaskCountForMember(userDetails.getMember().getId());
+        return ResponseEntity.ok(doneCount);
     }
 
 }
