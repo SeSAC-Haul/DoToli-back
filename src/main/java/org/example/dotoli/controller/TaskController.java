@@ -1,5 +1,7 @@
 package org.example.dotoli.controller;
 
+import java.util.List;
+
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -80,5 +82,16 @@ public class TaskController {
 		return ResponseEntity.ok().build();
 	}
 
+	@GetMapping("/search")
+	public ResponseEntity<List<TaskResponseDto>> searchTaskByContent(
+		@RequestParam String content,
+		@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		if (content.length() < 2) {
+			return ResponseEntity.badRequest().build();
+		}
+		return ResponseEntity.ok(taskService
+			.searchTaskByContent(userDetails.getMember().getId(), content));
+	}
 }
 
