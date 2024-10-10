@@ -95,5 +95,13 @@ public class TaskController {
         return ResponseEntity.ok(doneCount);
     }
 
+    @GetMapping("/mypage/rate")
+    public ResponseEntity<Long> getRateTaskCount(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long completionRate = taskService.calculateCompletionRate(userDetails.getMember().getId());
+        return ResponseEntity.ok(completionRate);
+    }
+
 }
 
