@@ -29,54 +29,62 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tasks")
 public class TaskController {
 
-	private final TaskService taskService;
+    private final TaskService taskService;
 
-	@PostMapping
-	public ResponseEntity<Long> addNewTask(
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
-	}
+    @PostMapping
+    public ResponseEntity<Long> addNewTask(
+            @RequestBody @Valid TaskRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
+    }
 
-	@GetMapping
-	public ResponseEntity<List<TaskResponseDto>> getAllTask(
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId()));
-	}
+    @GetMapping
+    public ResponseEntity<List<TaskResponseDto>> getAllTask(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId()));
+    }
 
-	@PutMapping("/{targetId}")
-	public ResponseEntity<Void> updateTask(
-			@PathVariable Long targetId,
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		taskService.updateTask(targetId, dto, userDetails.getMember().getId());
+    @PutMapping("/{targetId}")
+    public ResponseEntity<Void> updateTask(
+            @PathVariable Long targetId,
+            @RequestBody @Valid TaskRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        taskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
-		return ResponseEntity.ok().build();
-	}
+        return ResponseEntity.ok().build();
+    }
 
-	@PutMapping("/{targetId}/toggle")
-	public ResponseEntity<Void> toggleTaskDone(
-			@PathVariable Long targetId,
-			@RequestBody @Valid ToggleRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
+    @PutMapping("/{targetId}/toggle")
+    public ResponseEntity<Void> toggleTaskDone(
+            @PathVariable Long targetId,
+            @RequestBody @Valid ToggleRequestDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
-		return ResponseEntity.ok().build();
-	}
+        return ResponseEntity.ok().build();
+    }
 
-	@DeleteMapping("/{targetId}")
-	public ResponseEntity<Void> deleteTask(
-			@PathVariable Long targetId,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		taskService.deleteTask(targetId, userDetails.getMember().getId());
+    @DeleteMapping("/{targetId}")
+    public ResponseEntity<Void> deleteTask(
+            @PathVariable Long targetId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        taskService.deleteTask(targetId, userDetails.getMember().getId());
 
-		return ResponseEntity.ok().build();
-	}
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<Long> getTotalTaskCount(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long totalCount = taskService.getTotalTaskCountForMember(userDetails.getMember().getId());
+        return ResponseEntity.ok(totalCount);
+    }
 
 }
 
