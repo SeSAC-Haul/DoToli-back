@@ -11,20 +11,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Task 항목을 표현하는 엔티티 클래스
+ * 팀과 회원 간의 다대다 관계를 표현하는 엔티티 클래스
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Task {
+public class TeamMember {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	private String content;
-
-	private boolean done;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Member member;
@@ -32,27 +28,13 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Team team;
 
-	private Task(String content, Member member, Team team) {
-		this.content = content;
-		this.done = false;
+	private TeamMember(Member member, Team team) {
 		this.member = member;
 		this.team = team;
 	}
 
-	public static Task createPersonalTask(String content, Member member) {
-		return new Task(content, member, null);
-	}
-
-	public static Task createTeamTask(String content, Member member, Team team) {
-		return new Task(content, member, team);
-	}
-
-	public void updateContent(String content) {
-		this.content = content;
-	}
-
-	public void updateDone(boolean done) {
-		this.done = done;
+	public static TeamMember createNew(Member member, Team team) {
+		return new TeamMember(member, team);
 	}
 
 }
