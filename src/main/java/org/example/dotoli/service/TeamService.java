@@ -43,7 +43,7 @@ public class TeamService {
 		TeamMember teamMember = TeamMember.createNew(member, team);
 		teamMemberRepository.save(teamMember);
 
-		return teamMember.getId();
+		return team.getId();
 	}
 
 	/**
