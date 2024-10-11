@@ -2,6 +2,7 @@ package org.example.dotoli.controller;
 
 import java.util.List;
 
+import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -80,27 +81,12 @@ public class TaskController {
     }
 
     @GetMapping("/mypage")
-    public ResponseEntity<Long> getTotalTaskCount(
+    public ResponseEntity<MyPageResponseDto> getMyPageInfo(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        Long totalCount = taskService.getTotalTaskCountForMember(userDetails.getMember().getId());
-        return ResponseEntity.ok(totalCount);
-    }
-
-    @GetMapping("/mypage/count")
-    public ResponseEntity<Long> getDoneTaskCount(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Long doneCount = taskService.getCompletedTaskCountForMember(userDetails.getMember().getId());
-        return ResponseEntity.ok(doneCount);
-    }
-
-    @GetMapping("/mypage/rate")
-    public ResponseEntity<Long> getRateTaskCount(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Long completionRate = taskService.calculateCompletionRate(userDetails.getMember().getId());
-        return ResponseEntity.ok(completionRate);
+        Long memberId = userDetails.getMember().getId();
+        MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
+        return ResponseEntity.ok(dto);
     }
 
 }
