@@ -52,7 +52,7 @@ public class TeamService {
 	public List<TeamResponseDto> getCurrentMemberTeamList(Long memberId) {
 		List<Team> teamList = teamRepository.findAllCurrentMemberTeam(memberId);
 
-		return teamList.stream().map(team -> new TeamResponseDto(team.getTeamName())).toList();
+		return teamList.stream().map(team -> new TeamResponseDto(team.getId(), team.getTeamName())).toList();
 	}
 
 	/**
