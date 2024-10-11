@@ -14,7 +14,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 	boolean existsByTeamName(String teamName);
 
 	@Query("SELECT t "
-			+ "FROM Team t JOIN TeamMember tm "
+			+ "FROM Team t JOIN TeamMember tm ON t.id = tm.team.id "
 			+ "WHERE tm.member.id = :memberId")
 	List<Team> findAllCurrentMemberTeam(Long memberId);
 
