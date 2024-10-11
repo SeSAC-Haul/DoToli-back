@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 
 import org.example.dotoli.config.error.exception.DuplicateTeamNameException;
 import org.example.dotoli.domain.Member;
+import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
 import org.example.dotoli.dto.team.TeamRequestDto;
 import org.example.dotoli.repository.MemberRepository;
@@ -51,23 +52,24 @@ class TeamServiceTest {
 	void createTeam_ShouldCreateTeamSuccessfully() {
 		// Given
 		Long memberId = 1L;
-		Long expectedTeamMemberId = 1L;
+		Long expectedTeamId = 1L;
 		when(teamRepository.existsByTeamName(any(String.class))).thenReturn(false);
 		when(memberRepository.getReferenceById(any(Long.class))).thenReturn(member);
 
-		when(teamMemberRepository.save(any(TeamMember.class))).thenAnswer(invocation -> {
-			TeamMember savedTeamMember = invocation.getArgument(0);
-			setId(savedTeamMember, expectedTeamMemberId);
-			return savedTeamMember;
+		when(teamRepository.save(any(Team.class))).thenAnswer(invocation -> {
+			Team savedTeam = invocation.getArgument(0);
+			setId(savedTeam, expectedTeamId);
+			return savedTeam;
 		});
 
 		// When
-		Long teamMemberId = teamService.createTeam(memberId, teamRequestDto);
+		Long teamId = teamService.createTeam(memberId, teamRequestDto);
 
 		// Then
-		assertEquals(expectedTeamMemberId, teamMemberId);
+		assertEquals(expectedTeamId, teamId);
 		verify(teamRepository).existsByTeamName("New Team");
 		verify(memberRepository).getReferenceById(memberId);
+		verify(teamRepository).save(any(Team.class));
 		verify(teamMemberRepository).save(any(TeamMember.class));
 	}
 
@@ -90,14 +92,14 @@ class TeamServiceTest {
 		verify(teamMemberRepository, never()).save(any(TeamMember.class));
 	}
 
-	// TeamMember에 ID를 설정하는 헬퍼 메서드
-	private void setId(TeamMember teamMember, Long id) {
+	// Team에 ID를 설정하는 헬퍼 메서드
+	private void setId(Team team, Long id) {
 		try {
-			Field idField = TeamMember.class.getDeclaredField("id");
+			Field idField = Team.class.getDeclaredField("id");
 			idField.setAccessible(true);
-			idField.set(teamMember, id);
+			idField.set(team, id);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new RuntimeException("Failed to set TeamMember ID", e);
+			throw new RuntimeException("Failed to set Team ID", e);
 		}
 	}
 
