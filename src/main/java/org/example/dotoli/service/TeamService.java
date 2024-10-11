@@ -1,10 +1,13 @@
 package org.example.dotoli.service;
 
+import java.util.List;
+
 import org.example.dotoli.config.error.exception.DuplicateTeamNameException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
 import org.example.dotoli.dto.team.TeamRequestDto;
+import org.example.dotoli.dto.team.TeamResponseDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TeamMemberRepository;
 import org.example.dotoli.repository.TeamRepository;
@@ -44,6 +47,12 @@ public class TeamService {
 		teamMemberRepository.save(teamMember);
 
 		return team.getId();
+	}
+
+	public List<TeamResponseDto> getCurrentMemberTeamList(Long memberId) {
+		List<Team> teamList = teamRepository.findAllCurrentMemberTeam(memberId);
+
+		return teamList.stream().map(team -> new TeamResponseDto(team.getTeamName())).toList();
 	}
 
 	/**
