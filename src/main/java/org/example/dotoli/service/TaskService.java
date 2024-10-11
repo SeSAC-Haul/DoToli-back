@@ -34,7 +34,7 @@ public class TaskService {
 	@Transactional
 	public Long saveTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
-		Task task = Task.createPersonalTask(dto.getContent(), member);
+		Task task = Task.createSimpleTask(dto.getContent(), member);
 
 		return taskRepository.save(task).getId();
 	}

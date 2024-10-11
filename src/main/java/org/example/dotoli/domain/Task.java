@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,12 +52,30 @@ public class Task {
 		this.team = team;
 	}
 
-	public static Task createPersonalTask(String content, Member member) {
-		return new Task(content, member, null);
+	// 간단한 할 일 생성 메소드
+	public static Task createSimpleTask(String content, Member member) {
+		Task task = new Task(content, member, null);
+		task.deadline = null;
+		task.flag = false;
+		return task;
+	}
+
+	// 상세 할 일 생성 메소드
+	public static Task createDetailedTask(String content, Member member, LocalDate deadline, boolean flag) {
+		Task task = new Task(content, member, null);
+		task.deadline = deadline;
+		task.flag = flag;
+		return task;
 	}
 
 	public static Task createTeamTask(String content, Member member, Team team) {
 		return new Task(content, member, team);
+	}
+
+	// 엔티티가 저장되기 전에 자동으로 생성일 지정
+	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public void updateContent(String content) {
@@ -65,6 +84,16 @@ public class Task {
 
 	public void updateDone(boolean done) {
 		this.done = done;
+	}
+
+	// 데드라인 적용 메소드
+	public void updateDeadline(LocalDate deadline) {
+		this.deadline = deadline;
+	}
+
+	// 중요도(플래그) 적용 메소드
+	public void updateFlag(boolean flag) {
+		this.flag = flag;
 	}
 
 }
