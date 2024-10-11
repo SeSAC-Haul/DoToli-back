@@ -6,6 +6,7 @@ import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Task;
+import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -91,6 +92,18 @@ public class TaskService {
         if (!taskOwnerId.equals(currentMemberId)) {
             throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
         }
+    }
+
+    public MyPageResponseDto getMyPageInfo(Long memberId) {
+        Member member = memberRepository.getReferenceById(memberId);
+
+        Long totalTasks = getTotalTaskCountForMember(memberId);
+        Long completedTasks = getCompletedTaskCountForMember(memberId);
+        Long completionRate = calculateCompletionRate(memberId);
+
+        return new MyPageResponseDto(member.getEmail(), member.getNickname(), totalTasks, completedTasks,
+                completionRate);
+
     }
 
     @Transactional(readOnly = true)
