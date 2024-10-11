@@ -38,8 +38,9 @@ public class TeamService {
 		Member member = memberRepository.getReferenceById(memberId);
 
 		Team team = Team.createNew(dto.getTeamName());
-		TeamMember teamMember = TeamMember.createNew(member, team);
+		teamRepository.save(team);
 
+		TeamMember teamMember = TeamMember.createNew(member, team);
 		teamMemberRepository.save(teamMember);
 
 		return teamMember.getId();
