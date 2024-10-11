@@ -1,5 +1,8 @@
 package org.example.dotoli.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +28,15 @@ public class Task {
 	private String content;
 
 	private boolean done;
+
+	// 생성일
+	private LocalDateTime createdAt;
+
+	// 마감일
+	private LocalDate deadline;
+
+	// 중요도(플래그)
+	private boolean flag;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Member member;
