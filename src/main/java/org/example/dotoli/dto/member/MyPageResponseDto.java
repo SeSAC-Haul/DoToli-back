@@ -12,14 +12,14 @@ public class MyPageResponseDto {
 
     private String nickname;
 
-    private int totalTaskCount;
+    private Long totalTaskCount;
 
-    private int completedTaskCount;
+    private Long completedTaskCount;
 
-    private int achievementRate;
+    private Long achievementRate;
 
     public MyPageResponseDto(
-            String email, String nickname, int totalTaskCount, int completedTaskCount, int achievementRate
+            String email, String nickname, Long totalTaskCount, Long completedTaskCount, Long achievementRate
     ) {
         this.email = email;
         this.nickname = nickname;
