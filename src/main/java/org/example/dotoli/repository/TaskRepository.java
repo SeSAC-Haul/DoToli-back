@@ -16,7 +16,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	@Query("SELECT t " +
 			"FROM Task t " +
 			"WHERE t.member.id = :memberId " +
-			"ORDER BY t.done ASC, t.id DESC")
+			"ORDER BY t.done ASC, t.createdAt DESC")
 	List<Task> findTasksByMemberId(@Param("memberId") Long memberId);
 
 }
