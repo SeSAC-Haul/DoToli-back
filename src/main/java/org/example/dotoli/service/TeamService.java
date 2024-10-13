@@ -3,11 +3,13 @@ package org.example.dotoli.service;
 import java.util.List;
 
 import org.example.dotoli.config.error.exception.DuplicateTeamNameException;
+import org.example.dotoli.config.error.exception.ForbiddenException;
+import org.example.dotoli.config.error.exception.TeamNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
-import org.example.dotoli.dto.team.TeamRequestDto;
 import org.example.dotoli.dto.team.TeamResponseDto;
+import org.example.dotoli.dto.team.TeamRequestDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TeamMemberRepository;
 import org.example.dotoli.repository.TeamRepository;
@@ -53,6 +55,20 @@ public class TeamService {
 		List<Team> teamList = teamRepository.findAllCurrentMemberTeam(memberId);
 
 		return teamList.stream().map(team -> new TeamResponseDto(team.getId(), team.getTeamName())).toList();
+	}
+
+	public TeamResponseDto getTeamInfo(Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
+		Team team = teamRepository.findById(teamId)
+				.orElseThrow(TeamNotFoundException::new);
+
+		return new TeamResponseDto(team.getId(), team.getTeamName());
+	}
+
+	private void validateMemberTeamAccess(Long memberId, Long teamId) {
+		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId))
+			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
 	}
 
 	/**
