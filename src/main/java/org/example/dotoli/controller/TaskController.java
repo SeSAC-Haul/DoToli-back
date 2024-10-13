@@ -7,6 +7,7 @@ import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
+import org.example.dotoli.service.TaskSearchService;
 import org.example.dotoli.service.TaskService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 public class TaskController {
 
 	private final TaskService taskService;
+
+	private final TaskSearchService taskSearchService;
 
 	@PostMapping
 	public ResponseEntity<Long> addNewTask(
@@ -84,15 +87,12 @@ public class TaskController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<List<TaskResponseDto>> searchTaskByContent(
-			@RequestParam String content,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		if (content.length() < 2) {
-			return ResponseEntity.badRequest().build();
-		}
-		return ResponseEntity.ok(taskService
-				.searchTaskByContent(userDetails.getMember().getId(), content));
+	public ResponseEntity<List<TaskResponseDto>> searchTasks(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam String keyword) {
+		Long memberId = userDetails.getMember().getId();
+		List<TaskResponseDto> tasks = taskSearchService.searchTasksByContentOrTeam(memberId, keyword);
+		return ResponseEntity.ok(tasks);
 	}
 
 	@GetMapping("/mypage")
