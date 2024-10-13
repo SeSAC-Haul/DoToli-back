@@ -45,27 +45,24 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Team team;
 
-	private Task(String content, Member member, Team team) {
+	// 공통 할 일 생성 메서드
+	private Task(String content, Member member, LocalDate deadline, boolean flag, Team team) {
 		this.content = content;
-		this.done = false;
 		this.member = member;
+		this.deadline = deadline;
+		this.flag = flag;
 		this.team = team;
+		this.done = false;
 	}
 
 	// 간단한 할 일 생성 메소드
 	public static Task createSimpleTask(String content, Member member) {
-		Task task = new Task(content, member, null);
-		task.deadline = null;
-		task.flag = false;
-		return task;
+		return new Task(content, member, null, false, null);
 	}
 
 	// 상세 할 일 생성 메소드
 	public static Task createDetailedTask(String content, Member member, LocalDate deadline, boolean flag) {
-		Task task = new Task(content, member, null);
-		task.deadline = deadline;
-		task.flag = flag;
-		return task;
+		return new Task(content, member, null, false, null);
 	}
 
 	public static Task createTeamTask(String content, Member member, Team team) {

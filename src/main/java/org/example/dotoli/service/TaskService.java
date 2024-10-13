@@ -34,6 +34,8 @@ public class TaskService {
 	@Transactional
 	public Long saveTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
+
+		// 기본값 처리 : deadline이 없을 경우 null, flag가 없으면 flase로 생성
 		Task task = Task.createSimpleTask(dto.getContent(), member);
 
 		return taskRepository.save(task).getId();
