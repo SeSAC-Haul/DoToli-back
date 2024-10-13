@@ -15,15 +15,16 @@ import org.springframework.data.repository.query.Param;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query("SELECT t " +
-		"FROM Task t " +
-		"WHERE t.member.id = :memberId " +
-		"ORDER BY t.done ASC, t.id DESC")
+			"FROM Task t " +
+			"WHERE t.member.id = :memberId " +
+			"ORDER BY t.done ASC, t.id DESC")
 	Page<Task> findAllSorted(@Param("memberId") Long memberId, Pageable pageable);
 
 	@Query("SELECT t " +
-		"FROM Task t " +
-		"WHERE t.member.id = :memberId AND t.content LIKE %:content%"
+			"FROM Task t " +
+			"WHERE t.member.id = :memberId AND t.content LIKE %:content%"
 	)
 	List<Task> findByContentContainingAndMemberId(@Param("memberId") Long memberId,
-		@Param("content") String content);
+			@Param("content") String content);
+
 }
