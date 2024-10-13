@@ -43,7 +43,7 @@ public class TaskService {
 	 * 할 일 목록 조회
 	 */
 	public List<TaskResponseDto> findAll(Long currentMemberId) {
-		return taskRepository.findAllSorted(currentMemberId).stream()
+		return taskRepository.findTasksByMemberId(currentMemberId).stream()
 				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
 				.toList();
 	}
@@ -83,7 +83,7 @@ public class TaskService {
 				.orElseThrow(TaskNotFoundException::new);
 
 		validateTaskOwnership(task.getMember().getId(), currentMemberId);
-		
+
 		return task;
 	}
 
