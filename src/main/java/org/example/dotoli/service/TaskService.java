@@ -7,6 +7,7 @@ import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Task;
+import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -49,7 +50,7 @@ public class TaskService {
 	public Page<TaskResponseDto> findAll(Long currentMemberId, int page) {
 		Pageable pageable = PageRequest.of(page, 5);
 		return taskRepository.findAllSorted(currentMemberId, pageable)
-			.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()));
+				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()));
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class TaskService {
 
 	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
 		Task task = taskRepository.findById(taskId)
-			.orElseThrow(TaskNotFoundException::new);
+				.orElseThrow(TaskNotFoundException::new);
 
 		validateTaskOwnership(task.getMember().getId(), currentMemberId);
 
@@ -104,7 +105,41 @@ public class TaskService {
 	public List<TaskResponseDto> searchTaskByContent(Long memberId, String content) {
 		List<Task> tasks = taskRepository.findByContentContainingAndMemberId(memberId, content);
 		return tasks.stream()
-			.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
-			.collect(Collectors.toList());
+				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
+				.collect(Collectors.toList());
 	}
+
+	public MyPageResponseDto getMyPageInfo(Long memberId) {
+		Member member = memberRepository.getReferenceById(memberId);
+
+		Long totalTasks = getTotalTaskCountForMember(memberId);
+		Long completedTasks = getCompletedTaskCountForMember(memberId);
+		Long completionRate = calculateCompletionRate(memberId);
+
+		return new MyPageResponseDto(member.getEmail(), member.getNickname(), totalTasks, completedTasks,
+				completionRate);
+
+	}
+
+	@Transactional(readOnly = true)
+	public Long getTotalTaskCountForMember(Long memberId) {
+		return taskRepository.countAllTasksByMemberId(memberId);
+	}
+
+	@Transactional(readOnly = true)
+	public Long getCompletedTaskCountForMember(Long memberId) {
+		return taskRepository.countCompletedTasksByMemberId(memberId);
+	}
+
+	public Long calculateCompletionRate(Long memberId) {
+		long totalTasks = getTotalTaskCountForMember(memberId);
+		long completedTasks = getCompletedTaskCountForMember(memberId);
+
+		if (totalTasks == 0) {
+			return 0L;
+		}
+
+		return (completedTasks * 100) / totalTasks;
+	}
+
 }

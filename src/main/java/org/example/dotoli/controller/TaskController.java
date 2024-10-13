@@ -2,6 +2,7 @@ package org.example.dotoli.controller;
 
 import java.util.List;
 
+import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -35,8 +36,8 @@ public class TaskController {
 
 	@PostMapping
 	public ResponseEntity<Long> addNewTask(
-		@RequestBody @Valid TaskRequestDto dto,
-		@AuthenticationPrincipal CustomUserDetails userDetails
+			@RequestBody @Valid TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
 	}
@@ -44,17 +45,17 @@ public class TaskController {
 	//
 	@GetMapping
 	public ResponseEntity<Page<TaskResponseDto>> getAllTask(
-		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(defaultValue = "0") int page
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam(defaultValue = "0") int page
 	) {
 		return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId(), page));
 	}
 
 	@PutMapping("/{targetId}")
 	public ResponseEntity<Void> updateTask(
-		@PathVariable Long targetId,
-		@RequestBody @Valid TaskRequestDto dto,
-		@AuthenticationPrincipal CustomUserDetails userDetails
+			@PathVariable Long targetId,
+			@RequestBody @Valid TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		taskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
@@ -63,9 +64,9 @@ public class TaskController {
 
 	@PutMapping("/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
-		@PathVariable Long targetId,
-		@RequestBody @Valid ToggleRequestDto dto,
-		@AuthenticationPrincipal CustomUserDetails userDetails
+			@PathVariable Long targetId,
+			@RequestBody @Valid ToggleRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
@@ -74,8 +75,8 @@ public class TaskController {
 
 	@DeleteMapping("/{targetId}")
 	public ResponseEntity<Void> deleteTask(
-		@PathVariable Long targetId,
-		@AuthenticationPrincipal CustomUserDetails userDetails
+			@PathVariable Long targetId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		taskService.deleteTask(targetId, userDetails.getMember().getId());
 
@@ -84,14 +85,24 @@ public class TaskController {
 
 	@GetMapping("/search")
 	public ResponseEntity<List<TaskResponseDto>> searchTaskByContent(
-		@RequestParam String content,
-		@AuthenticationPrincipal CustomUserDetails userDetails
+			@RequestParam String content,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		if (content.length() < 2) {
 			return ResponseEntity.badRequest().build();
 		}
 		return ResponseEntity.ok(taskService
-			.searchTaskByContent(userDetails.getMember().getId(), content));
+				.searchTaskByContent(userDetails.getMember().getId(), content));
 	}
+
+	@GetMapping("/mypage")
+	public ResponseEntity<MyPageResponseDto> getMyPageInfo(
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		Long memberId = userDetails.getMember().getId();
+		MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
+		return ResponseEntity.ok(dto);
+	}
+
 }
 

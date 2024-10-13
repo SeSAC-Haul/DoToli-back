@@ -27,4 +27,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	List<Task> findByContentContainingAndMemberId(@Param("memberId") Long memberId,
 			@Param("content") String content);
 
+	@Query("SELECT COUNT(t) " +
+			"FROM Task t " +
+			"WHERE t.member.id = :memberId")
+	Long countAllTasksByMemberId(@Param("memberId") Long memberId);
+
+	@Query("SELECT COUNT(t) " +
+			"FROM Task t " +
+			"WHERE t.member.id = :memberId AND t.done = true")
+	Long countCompletedTasksByMemberId(@Param("memberId") Long memberId);
+
 }
