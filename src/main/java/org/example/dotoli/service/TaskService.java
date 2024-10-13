@@ -29,35 +29,68 @@ public class TaskService {
 	private final MemberRepository memberRepository;
 
 	/**
-	 * 할 일 추가
+	 * 간단한 할 일 추가
 	 */
 	@Transactional
-	public Long saveTask(TaskRequestDto dto, Long currentMemberId) {
+	public Long saveSimpleTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
-
-		// 기본값 처리 : deadline이 없을 경우 null, flag가 없으면 flase로 생성
 		Task task = Task.createSimpleTask(dto.getContent(), member);
-
 		return taskRepository.save(task).getId();
 	}
 
 	/**
-	 * 할 일 목록 조회
+	 * 상세한 할 일 추가
 	 */
-	public List<TaskResponseDto> findAll(Long currentMemberId) {
-		return taskRepository.findTasksByMemberId(currentMemberId).stream()
-				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
+	@Transactional
+	public Long saveDetailedTask(TaskRequestDto dto, Long currentMemberId) {
+		Member member = memberRepository.getReferenceById(currentMemberId);
+		Task task = Task.createDetailedTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
+		return taskRepository.save(task).getId();
+	}
+
+	/**
+	 * 사용자의 모든 할 일 목록 조회
+	 */
+	public List<TaskResponseDto> getAllTasks(Long currentMemberId) {
+		List<Task> tasks = taskRepository.findTasksByMemberId(currentMemberId);
+		return tasks.stream()
+				.map(task -> new TaskResponseDto(
+						task.getId(),
+						task.getContent(),
+						task.isDone(),
+						task.getDeadline(),
+						task.isFlag(),
+						task.getCreatedAt()   // DTO로 변환하는 과정 직접 작성
+				))
 				.toList();
+	}
+
+	/**
+	 * 할 일 상세 조회 (개별 할 일 조회)
+	 */
+	public TaskResponseDto getTaskById(Long taskId) {
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(() -> new IllegalArgumentException("Task not found"));
+		return new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		);
 	}
 
 	/**
 	 * 할 일 수정
 	 */
 	@Transactional
-	public void updateTask(Long targetId, TaskRequestDto dto, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	public void updateTask(Long taskId, TaskRequestDto dto, Long currentMemberId) {
+		Task task = findTaskAndValidateOwnership(taskId, currentMemberId);
 
 		task.updateContent(dto.getContent());
+		task.updateDeadline(dto.getDeadline());
+		task.updateFlag(dto.isFlag());
 	}
 
 	/**
@@ -80,6 +113,9 @@ public class TaskService {
 		task.updateDone(dto.isDone());
 	}
 
+	/**
+	 * 특정 할 일 조회 및 소유권 확인
+	 */
 	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
@@ -89,6 +125,9 @@ public class TaskService {
 		return task;
 	}
 
+	/**
+	 * 소유권 검증
+	 */
 	private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
 		if (!taskOwnerId.equals(currentMemberId)) {
 			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");

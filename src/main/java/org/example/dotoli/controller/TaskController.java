@@ -36,14 +36,14 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(taskService.saveSimpleTask(dto, userDetails.getMember().getId()));
 	}
 
 	@GetMapping
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId()));
+		return ResponseEntity.ok(taskService.findAllTasks(userDetails.getMember().getId()));
 	}
 
 	@PutMapping("/{targetId}")
