@@ -13,7 +13,6 @@ import org.springframework.data.repository.query.Param;
  * Task 항목에 대한 데이터베이스 작업을 처리하는 래포지토리 인터페이스
  */
 public interface TaskRepository extends JpaRepository<Task, Long> {
-
 	@Query("SELECT t " +
 			"FROM Task t " +
 			"WHERE t.member.id = :memberId " +
