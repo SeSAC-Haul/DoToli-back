@@ -1,7 +1,5 @@
 package org.example.dotoli.controller;
 
-import java.util.List;
-
 import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
@@ -45,7 +43,6 @@ public class TaskController {
 		return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
 	}
 
-	//
 	@GetMapping
 	public ResponseEntity<Page<TaskResponseDto>> getAllTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -86,15 +83,6 @@ public class TaskController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/search")
-	public ResponseEntity<List<TaskResponseDto>> searchTasks(
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@RequestParam String keyword) {
-		Long memberId = userDetails.getMember().getId();
-		List<TaskResponseDto> tasks = taskSearchService.searchTasksByContentOrTeam(memberId, keyword);
-		return ResponseEntity.ok(tasks);
-	}
-
 	@GetMapping("/mypage")
 	public ResponseEntity<MyPageResponseDto> getMyPageInfo(
 			@AuthenticationPrincipal CustomUserDetails userDetails
@@ -102,6 +90,16 @@ public class TaskController {
 		Long memberId = userDetails.getMember().getId();
 		MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
 		return ResponseEntity.ok(dto);
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<Page<TaskResponseDto>> searchTasks(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam String keyword,
+			@RequestParam(defaultValue = "0") int page) {
+		Long memberId = userDetails.getMember().getId();
+		Page<TaskResponseDto> tasks = taskSearchService.searchTasksByContentOrTeam(memberId, keyword, page);
+		return ResponseEntity.ok(tasks);
 	}
 
 }
