@@ -62,7 +62,7 @@ public class Task {
 
 	// 상세 할 일 생성 메소드
 	public static Task createDetailedTask(String content, Member member, LocalDate deadline, boolean flag) {
-		return new Task(content, member, null, false, null);
+		return new Task(content, member, deadline, flag, null);
 	}
 
 	public static Task createTeamTask(String content, Member member, Team team) {
