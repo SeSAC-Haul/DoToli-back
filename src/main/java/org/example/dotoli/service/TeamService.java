@@ -6,6 +6,7 @@ import org.example.dotoli.config.error.exception.DuplicateTeamNameException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
+import org.example.dotoli.dto.member.MemberResponseDto;
 import org.example.dotoli.dto.team.TeamRequestDto;
 import org.example.dotoli.dto.team.TeamResponseDto;
 import org.example.dotoli.repository.MemberRepository;
@@ -62,6 +63,13 @@ public class TeamService {
 		if (teamRepository.existsByTeamName(teamName)) {
 			throw new DuplicateTeamNameException();
 		}
+	}
+
+	/**
+	 * 팀에 소속된 멤버 조회
+	 */
+	public List<MemberResponseDto> getMembersByTeamId(Long teamId) {
+		return teamMemberRepository.findMembersByTeamId(teamId);
 	}
 
 }
