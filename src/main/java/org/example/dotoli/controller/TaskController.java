@@ -30,63 +30,99 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tasks")
 public class TaskController {
 
-    private final TaskService taskService;
+	private final TaskService taskService;
 
-    @PostMapping
-    public ResponseEntity<Long> addNewTask(
-            @RequestBody @Valid TaskRequestDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        return ResponseEntity.ok(taskService.saveTask(dto, userDetails.getMember().getId()));
-    }
+	/**
+	 * 간단한 할 일 추가
+	 */
+	@PostMapping("/simple")
+	public ResponseEntity<Long> addSimpleTask(
+			@RequestBody @Valid TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		return ResponseEntity.ok(taskService.saveSimpleTask(dto, userDetails.getMember().getId()));
+	}
 
-    @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> getAllTask(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        return ResponseEntity.ok(taskService.findAll(userDetails.getMember().getId()));
-    }
+	/**
+	 * 상세한 할 일 추가
+	 */
+	@PostMapping("/detailed")
+	public ResponseEntity<Long> addDetailedTask(
+			@RequestBody @Valid TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		return ResponseEntity.ok(taskService.saveDetailedTask(dto, userDetails.getMember().getId()));
+	}
 
-    @PutMapping("/{targetId}")
-    public ResponseEntity<Void> updateTask(
-            @PathVariable Long targetId,
-            @RequestBody @Valid TaskRequestDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        taskService.updateTask(targetId, dto, userDetails.getMember().getId());
+	/**
+	 * 사용자의 모든 할 일 목록 조회
+	 */
+	@GetMapping
+	public ResponseEntity<List<TaskResponseDto>> getAllTask(
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		return ResponseEntity.ok(taskService.getAllTasks(userDetails.getMember().getId()));
+	}
 
-        return ResponseEntity.ok().build();
-    }
+	/**
+	 * 사용자의 할 일 상세 조회 (개별조회)
+	 */
+	@GetMapping("/{taskId}")
+	public ResponseEntity<TaskResponseDto> getTaskById(
+			@PathVariable Long taskId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		return ResponseEntity.ok(taskService.getTaskById(taskId));
+	}
 
-    @PutMapping("/{targetId}/toggle")
-    public ResponseEntity<Void> toggleTaskDone(
-            @PathVariable Long targetId,
-            @RequestBody @Valid ToggleRequestDto dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
+	/**
+	 * 할 일 수정
+	 */
+	@PutMapping("/{targetId}")
+	public ResponseEntity<Void> updateTask(
+			@PathVariable Long targetId,
+			@RequestBody @Valid TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		taskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
-        return ResponseEntity.ok().build();
-    }
+		return ResponseEntity.ok().build();
+	}
 
-    @DeleteMapping("/{targetId}")
-    public ResponseEntity<Void> deleteTask(
-            @PathVariable Long targetId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        taskService.deleteTask(targetId, userDetails.getMember().getId());
+	/**
+	 * 할 일 완료 상태로 변경
+	 */
+	@PutMapping("/{targetId}/toggle")
+	public ResponseEntity<Void> toggleTaskDone(
+			@PathVariable Long targetId,
+			@RequestBody @Valid ToggleRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
-        return ResponseEntity.ok().build();
-    }
+		return ResponseEntity.ok().build();
+	}
 
-    @GetMapping("/mypage")
-    public ResponseEntity<MyPageResponseDto> getMyPageInfo(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Long memberId = userDetails.getMember().getId();
-        MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
-        return ResponseEntity.ok(dto);
-    }
+	/**
+	 * 할 일 삭제
+	 */
+	@DeleteMapping("/{targetId}")
+	public ResponseEntity<Void> deleteTask(
+			@PathVariable Long targetId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		taskService.deleteTask(targetId, userDetails.getMember().getId());
+
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/mypage")
+	public ResponseEntity<MyPageResponseDto> getMyPageInfo(
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		Long memberId = userDetails.getMember().getId();
+		MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
+		return ResponseEntity.ok(dto);
+	}
 
 }
-
