@@ -12,11 +12,12 @@ import org.springframework.data.repository.query.Param;
  */
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+	// 로그인 사용자의 할 일 목록 조회
 	@Query("SELECT t " +
 			"FROM Task t " +
 			"WHERE t.member.id = :memberId " +
-			"ORDER BY t.done ASC, t.id DESC")
-	List<Task> findAllSorted(@Param("memberId") Long memberId);
+			"ORDER BY t.done ASC, t.createdAt DESC")
+	List<Task> findTasksByMemberId(@Param("memberId") Long memberId);
 
 	@Query("SELECT COUNT(t) " +
 			"FROM Task t " +

@@ -1,5 +1,7 @@
 package org.example.dotoli.dto.task;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -11,5 +13,9 @@ public class TaskRequestDto {
 
 	@NotBlank(message = "내용은 필수 입력값입니다.")
 	private String content;
+
+	private LocalDate deadline;
+
+	private boolean flag;
 
 }

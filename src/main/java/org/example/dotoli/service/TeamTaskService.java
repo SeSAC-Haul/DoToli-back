@@ -52,7 +52,8 @@ public class TeamTaskService {
 	 */
 	public List<TaskResponseDto> getTeamTasks(Long currentMemberId, Long teamId) {
 		return taskRepository.findTeamTasks(currentMemberId, teamId).stream()
-				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
+				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
+						task.isFlag(), task.getCreatedAt()))
 				.toList();
 	}
 

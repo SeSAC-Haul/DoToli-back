@@ -25,106 +25,147 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class TaskService {
 
-    private final TaskRepository taskRepository;
+	private final TaskRepository taskRepository;
 
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
-    /**
-     * 할 일 추가
-     */
-    @Transactional
-    public Long saveTask(TaskRequestDto dto, Long currentMemberId) {
-        Member member = memberRepository.getReferenceById(currentMemberId);
-        Task task = Task.createPersonalTask(dto.getContent(), member);
+	/**
+	 * 간단한 할 일 추가
+	 */
+	@Transactional
+	public Long saveSimpleTask(TaskRequestDto dto, Long currentMemberId) {
+		Member member = memberRepository.getReferenceById(currentMemberId);
+		Task task = Task.createSimpleTask(dto.getContent(), member);
+		return taskRepository.save(task).getId();
+	}
 
-        return taskRepository.save(task).getId();
-    }
+	/**
+	 * 상세한 할 일 추가
+	 */
+	@Transactional
+	public Long saveDetailedTask(TaskRequestDto dto, Long currentMemberId) {
+		Member member = memberRepository.getReferenceById(currentMemberId);
+		Task task = Task.createDetailedTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
+		return taskRepository.save(task).getId();
+	}
 
-    /**
-     * 할 일 목록 조회
-     */
-    public List<TaskResponseDto> findAll(Long currentMemberId) {
-        return taskRepository.findAllSorted(currentMemberId).stream()
-                .map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone()))
-                .toList();
-    }
+	/**
+	 * 사용자의 모든 할 일 목록 조회
+	 */
+	public List<TaskResponseDto> getAllTasks(Long currentMemberId) {
+		List<Task> tasks = taskRepository.findTasksByMemberId(currentMemberId);
+		return tasks.stream()
+				.map(task -> new TaskResponseDto(
+						task.getId(),
+						task.getContent(),
+						task.isDone(),
+						task.getDeadline(),
+						task.isFlag(),
+						task.getCreatedAt()   // DTO로 변환하는 과정 직접 작성
+				))
+				.toList();
+	}
 
-    /**
-     * 할 일 수정
-     */
-    @Transactional
-    public void updateTask(Long targetId, TaskRequestDto dto, Long currentMemberId) {
-        Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	/**
+	 * 할 일 상세 조회 (개별 할 일 조회)
+	 */
+	public TaskResponseDto getTaskById(Long taskId) {
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(() -> new IllegalArgumentException("Task not found"));
+		return new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		);
+	}
 
-        task.updateContent(dto.getContent());
-    }
+	/**
+	 * 할 일 수정
+	 */
+	@Transactional
+	public void updateTask(Long taskId, TaskRequestDto dto, Long currentMemberId) {
+		Task task = findTaskAndValidateOwnership(taskId, currentMemberId);
 
-    /**
-     * 할 일 삭제
-     */
-    @Transactional
-    public void deleteTask(Long targetId, Long currentMemberId) {
-        Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+		task.updateContent(dto.getContent());
+		task.updateDeadline(dto.getDeadline());
+		task.updateFlag(dto.isFlag());
+	}
 
-        taskRepository.delete(task);
-    }
+	/**
+	 * 할 일 삭제
+	 */
+	@Transactional
+	public void deleteTask(Long targetId, Long currentMemberId) {
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
-    /**
-     * 할 일 완료 상태 변경
-     */
-    @Transactional
-    public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
-        Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+		taskRepository.delete(task);
+	}
 
-        task.updateDone(dto.isDone());
-    }
+	/**
+	 * 할 일 완료 상태 변경
+	 */
+	@Transactional
+	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
-    private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(TaskNotFoundException::new);
+		task.updateDone(dto.isDone());
+	}
 
-        validateTaskOwnership(task.getMember().getId(), currentMemberId);
+	/**
+	 * 특정 할 일 조회 및 소유권 확인
+	 */
+	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(TaskNotFoundException::new);
 
-        return task;
-    }
+		validateTaskOwnership(task.getMember().getId(), currentMemberId);
 
-    private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
-        if (!taskOwnerId.equals(currentMemberId)) {
-            throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
-        }
-    }
+		return task;
+	}
 
-    public MyPageResponseDto getMyPageInfo(Long memberId) {
-        Member member = memberRepository.getReferenceById(memberId);
+	/**
+	 * 소유권 검증
+	 */
+	private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
+		if (!taskOwnerId.equals(currentMemberId)) {
+			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
+		}
+	}
 
-        Long totalTasks = getTotalTaskCountForMember(memberId);
-        Long completedTasks = getCompletedTaskCountForMember(memberId);
-        Long completionRate = calculateCompletionRate(memberId);
+	public MyPageResponseDto getMyPageInfo(Long memberId) {
+		Member member = memberRepository.getReferenceById(memberId);
 
-        return new MyPageResponseDto(member.getEmail(), member.getNickname(), totalTasks, completedTasks,
-                completionRate);
+		Long totalTasks = getTotalTaskCountForMember(memberId);
+		Long completedTasks = getCompletedTaskCountForMember(memberId);
+		Long completionRate = calculateCompletionRate(memberId);
 
-    }
+		return new MyPageResponseDto(member.getEmail(), member.getNickname(), totalTasks, completedTasks,
+				completionRate);
 
-    @Transactional(readOnly = true)
-    public Long getTotalTaskCountForMember(Long memberId) {
-        return taskRepository.countAllTasksByMemberId(memberId);
-    }
+	}
 
-    @Transactional(readOnly = true)
-    public Long getCompletedTaskCountForMember(Long memberId) {
-        return taskRepository.countCompletedTasksByMemberId(memberId);
-    }
+	@Transactional(readOnly = true)
+	public Long getTotalTaskCountForMember(Long memberId) {
+		return taskRepository.countAllTasksByMemberId(memberId);
+	}
 
-    public Long calculateCompletionRate(Long memberId) {
-        long totalTasks = getTotalTaskCountForMember(memberId);
-        long completedTasks = getCompletedTaskCountForMember(memberId);
+	@Transactional(readOnly = true)
+	public Long getCompletedTaskCountForMember(Long memberId) {
+		return taskRepository.countCompletedTasksByMemberId(memberId);
+	}
 
-        if (totalTasks == 0) {
-            return 0L;
-        }
+	public Long calculateCompletionRate(Long memberId) {
+		long totalTasks = getTotalTaskCountForMember(memberId);
+		long completedTasks = getCompletedTaskCountForMember(memberId);
 
-        return (completedTasks * 100) / totalTasks;
-    }
+		if (totalTasks == 0) {
+			return 0L;
+		}
+
+		return (completedTasks * 100) / totalTasks;
+	}
 
 }
