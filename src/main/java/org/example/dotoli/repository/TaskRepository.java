@@ -19,4 +19,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			"ORDER BY t.done ASC, t.createdAt DESC")
 	List<Task> findTasksByMemberId(@Param("memberId") Long memberId);
 
+    @Query("SELECT COUNT(t) " +
+            "FROM Task t " +
+            "WHERE t.member.id = :memberId")
+    Long countAllTasksByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT COUNT(t) " +
+            "FROM Task t " +
+            "WHERE t.member.id = :memberId AND t.done = true")
+    Long countCompletedTasksByMemberId(@Param("memberId") Long memberId);
+
 }
