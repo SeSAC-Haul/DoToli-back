@@ -61,7 +61,7 @@ public class TaskController {
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(personalTaskService.getAllByMemberId(userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.getAllTasksByMemberId(userDetails.getMember().getId()));
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class TaskController {
 			@PathVariable Long taskId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(personalTaskService.getById(taskId));
+		return ResponseEntity.ok(personalTaskService.getTaskById(taskId));
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		personalTaskService.update(targetId, dto, userDetails.getMember().getId());
+		personalTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -111,7 +111,7 @@ public class TaskController {
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		personalTaskService.delete(targetId, userDetails.getMember().getId());
+		personalTaskService.deleteTask(targetId, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}

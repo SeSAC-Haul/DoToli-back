@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PersonalTaskService {
+public class PersonalTaskService implements TaskService {
 
 	private final TaskRepository taskRepository;
 
@@ -32,6 +32,7 @@ public class PersonalTaskService {
 	/**
 	 * 간단한 할 일 추가
 	 */
+	@Override
 	@Transactional
 	public Long createSimpleTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
@@ -42,6 +43,7 @@ public class PersonalTaskService {
 	/**
 	 * 상세한 할 일 추가
 	 */
+	@Override
 	@Transactional
 	public Long createDetailedTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
@@ -52,7 +54,8 @@ public class PersonalTaskService {
 	/**
 	 * 사용자의 모든 할 일 목록 조회
 	 */
-	public List<TaskResponseDto> getAllByMemberId(Long currentMemberId) {
+	@Override
+	public List<TaskResponseDto> getAllTasksByMemberId(Long currentMemberId) {
 		List<Task> tasks = taskRepository.findTasksByMemberId(currentMemberId);
 		return tasks.stream()
 				.map(task -> new TaskResponseDto(
@@ -69,7 +72,8 @@ public class PersonalTaskService {
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
-	public TaskResponseDto getById(Long taskId) {
+	@Override
+	public TaskResponseDto getTaskById(Long taskId) {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(() -> new IllegalArgumentException("Task not found"));
 		return new TaskResponseDto(
@@ -85,8 +89,9 @@ public class PersonalTaskService {
 	/**
 	 * 할 일 수정
 	 */
+	@Override
 	@Transactional
-	public void update(Long taskId, TaskRequestDto dto, Long currentMemberId) {
+	public void updateTask(Long taskId, TaskRequestDto dto, Long currentMemberId) {
 		Task task = findTaskAndValidateOwnership(taskId, currentMemberId);
 
 		task.updateContent(dto.getContent());
@@ -97,8 +102,9 @@ public class PersonalTaskService {
 	/**
 	 * 할 일 삭제
 	 */
+	@Override
 	@Transactional
-	public void delete(Long targetId, Long currentMemberId) {
+	public void deleteTask(Long targetId, Long currentMemberId) {
 		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
 		taskRepository.delete(task);
@@ -107,6 +113,7 @@ public class PersonalTaskService {
 	/**
 	 * 할 일 완료 상태 변경
 	 */
+	@Override
 	@Transactional
 	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
 		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
