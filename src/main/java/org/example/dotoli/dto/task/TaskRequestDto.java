@@ -18,4 +18,6 @@ public class TaskRequestDto {
 
 	private boolean flag;
 
+	private Long teamId;
+
 }
