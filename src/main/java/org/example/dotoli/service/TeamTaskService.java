@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TeamTaskService {
+public class TeamTaskService implements TaskService {
 
 	private final TaskRepository taskRepository;
 
@@ -34,12 +34,13 @@ public class TeamTaskService {
 	private final TeamRepository teamRepository;
 
 	/**
-	 * 할 일 추가
+	 * 간단한 할 일 추가
 	 */
+	@Override
 	@Transactional
-	public Long saveTeamTask(TaskRequestDto dto, Long currentMemberId, Long teamId) {
+	public Long createSimpleTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
-		Team team = teamRepository.findById(teamId)
+		Team team = teamRepository.findById(dto.getTeamId())
 				.orElseThrow(TeamNotFoundException::new);
 
 		Task task = Task.createTeamTask(dto.getContent(), member, team);
@@ -48,9 +49,22 @@ public class TeamTaskService {
 	}
 
 	/**
+	 * 상세한 할 일 추가
+	 */
+	@Override
+	@Transactional
+	public Long createDetailedTask(TaskRequestDto dto, Long currentMemberId) {
+		Member member = memberRepository.getReferenceById(currentMemberId);
+
+		Task task = Task.createDetailedTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
+
+		return taskRepository.save(task).getId();
+	}
+
+	/**
 	 * 할 일 목록 조회
 	 */
-	public List<TaskResponseDto> getTeamTasks(Long currentMemberId, Long teamId) {
+	public List<TaskResponseDto> getAllTasksByMemberId(Long currentMemberId, Long teamId) {
 		return taskRepository.findTeamTasks(currentMemberId, teamId).stream()
 				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
 						task.isFlag(), task.getCreatedAt()))
@@ -58,10 +72,29 @@ public class TeamTaskService {
 	}
 
 	/**
+	 * 할 일 상세 조회 (개별 할 일 조회)
+	 */
+	@Override
+	public TaskResponseDto getTaskById(Long taskId) {
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(TaskNotFoundException::new);
+
+		return new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		);
+	}
+
+	/**
 	 * 할 일 수정
 	 */
+	@Override
 	@Transactional
-	public void updateTeamTask(Long targetId, TaskRequestDto dto, Long currentMemberId) {
+	public void updateTask(Long targetId, TaskRequestDto dto, Long currentMemberId) {
 		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
 		task.updateContent(dto.getContent());
@@ -70,6 +103,7 @@ public class TeamTaskService {
 	/**
 	 * 할 일 삭제
 	 */
+	@Override
 	@Transactional
 	public void deleteTask(Long targetId, Long currentMemberId) {
 		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
@@ -80,6 +114,7 @@ public class TeamTaskService {
 	/**
 	 * 할 일 완료 상태 변경
 	 */
+	@Override
 	@Transactional
 	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
 		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);

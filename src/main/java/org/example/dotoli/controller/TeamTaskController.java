@@ -34,7 +34,7 @@ public class TeamTaskController {
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long teamId
 	) {
-		return ResponseEntity.ok(teamTaskService.saveTeamTask(dto, userDetails.getMember().getId(), teamId));
+		return ResponseEntity.ok(teamTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
 	}
 
 	@GetMapping
@@ -42,7 +42,7 @@ public class TeamTaskController {
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long teamId
 	) {
-		return ResponseEntity.ok(teamTaskService.getTeamTasks(userDetails.getMember().getId(), teamId));
+		return ResponseEntity.ok(teamTaskService.getAllTasksByMemberId(userDetails.getMember().getId(), teamId));
 	}
 
 	@PutMapping("/{targetId}")
@@ -52,7 +52,7 @@ public class TeamTaskController {
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long teamId
 	) {
-		teamTaskService.updateTeamTask(targetId, dto, userDetails.getMember().getId());
+		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
