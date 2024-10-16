@@ -12,8 +12,6 @@ public interface TaskService {
 
 	Long createDetailedTask(TaskRequestDto dto, Long memberId);
 
-	List<TaskResponseDto> getAllTasksByMemberId(Long memberId);
-
 	TaskResponseDto getTaskById(Long taskId);
 
 	void updateTask(Long taskId, TaskRequestDto dto, Long memberId);

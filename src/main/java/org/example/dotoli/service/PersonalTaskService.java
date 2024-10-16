@@ -54,7 +54,6 @@ public class PersonalTaskService implements TaskService {
 	/**
 	 * 사용자의 모든 할 일 목록 조회
 	 */
-	@Override
 	public List<TaskResponseDto> getAllTasksByMemberId(Long currentMemberId) {
 		List<Task> tasks = taskRepository.findTasksByMemberId(currentMemberId);
 		return tasks.stream()
