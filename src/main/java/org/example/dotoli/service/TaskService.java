@@ -1,7 +1,5 @@
 package org.example.dotoli.service;
 
-import java.util.List;
-
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
