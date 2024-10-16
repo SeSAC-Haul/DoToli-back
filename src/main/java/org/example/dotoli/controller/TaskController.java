@@ -7,7 +7,7 @@ import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
-import org.example.dotoli.service.TaskService;
+import org.example.dotoli.service.PersonalTaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/tasks")
 public class TaskController {
 
-	private final TaskService taskService;
+	private final PersonalTaskService personalTaskService;
 
 	/**
 	 * 간단한 할 일 추가
@@ -40,7 +40,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.saveSimpleTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.saveDetailedTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class TaskController {
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.getAllTasks(userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.getAllByMemberId(userDetails.getMember().getId()));
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class TaskController {
 			@PathVariable Long taskId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.getTaskById(taskId));
+		return ResponseEntity.ok(personalTaskService.getById(taskId));
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		taskService.updateTask(targetId, dto, userDetails.getMember().getId());
+		personalTaskService.update(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -98,7 +98,7 @@ public class TaskController {
 			@RequestBody @Valid ToggleRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
+		personalTaskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -111,7 +111,7 @@ public class TaskController {
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		taskService.deleteTask(targetId, userDetails.getMember().getId());
+		personalTaskService.delete(targetId, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -121,7 +121,7 @@ public class TaskController {
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		Long memberId = userDetails.getMember().getId();
-		MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
+		MyPageResponseDto dto = personalTaskService.getMyPageInfo(memberId);
 		return ResponseEntity.ok(dto);
 	}
 
