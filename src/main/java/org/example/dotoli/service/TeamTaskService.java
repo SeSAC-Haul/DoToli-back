@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
-import org.example.dotoli.config.error.exception.TeamNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Task;
 import org.example.dotoli.domain.Team;
@@ -13,6 +12,7 @@ import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
+import org.example.dotoli.repository.TeamMemberRepository;
 import org.example.dotoli.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,15 +33,22 @@ public class TeamTaskService implements TaskService {
 
 	private final TeamRepository teamRepository;
 
+	private final TeamMemberRepository teamMemberRepository;
+
 	/**
 	 * 간단한 할 일 추가
 	 */
 	@Override
 	@Transactional
-	public Long createSimpleTask(TaskRequestDto dto, Long currentMemberId) {
-		Member member = memberRepository.getReferenceById(currentMemberId);
-		Team team = teamRepository.findById(dto.getTeamId())
-				.orElseThrow(TeamNotFoundException::new);
+	public Long createSimpleTask(TaskRequestDto dto, Long memberId) {
+		Long teamId = dto.getTeamId();
+
+		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
+			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
+		}
+
+		Member member = memberRepository.getReferenceById(memberId);
+		Team team = teamRepository.getReferenceById(teamId);
 
 		Task task = Task.createTeamTask(dto.getContent(), member, team);
 
