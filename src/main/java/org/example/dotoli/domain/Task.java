@@ -56,17 +56,22 @@ public class Task {
 	}
 
 	// 간단한 할 일 생성 메소드
-	public static Task createSimpleTask(String content, Member member) {
+	public static Task createSimplePersonalTask(String content, Member member) {
 		return new Task(content, member, null, false, null);
 	}
 
 	// 상세 할 일 생성 메소드
-	public static Task createDetailedTask(String content, Member member, LocalDate deadline, boolean flag) {
+	public static Task createDetailedPersonalTask(String content, Member member, LocalDate deadline, boolean flag) {
 		return new Task(content, member, deadline, flag, null);
 	}
 
-	public static Task createTeamTask(String content, Member member, Team team) {
+	public static Task createSimpleTeamTask(String content, Member member, Team team) {
 		return new Task(content, member, null, false, team);
+	}
+
+	public static Task createDetailedTeamTask(String content, Member member, LocalDate deadline, boolean flag,
+			Team team) {
+		return new Task(content, member, deadline, flag, team);
 	}
 
 	// 엔티티가 저장되기 전에 자동으로 생성일 지정

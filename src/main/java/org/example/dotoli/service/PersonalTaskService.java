@@ -36,7 +36,7 @@ public class PersonalTaskService implements TaskService {
 	@Transactional
 	public Long createSimpleTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
-		Task task = Task.createSimpleTask(dto.getContent(), member);
+		Task task = Task.createSimplePersonalTask(dto.getContent(), member);
 		return taskRepository.save(task).getId();
 	}
 
@@ -47,7 +47,7 @@ public class PersonalTaskService implements TaskService {
 	@Transactional
 	public Long createDetailedTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
-		Task task = Task.createDetailedTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
+		Task task = Task.createDetailedPersonalTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
 		return taskRepository.save(task).getId();
 	}
 

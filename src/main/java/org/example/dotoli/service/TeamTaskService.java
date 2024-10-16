@@ -43,14 +43,12 @@ public class TeamTaskService implements TaskService {
 	public Long createSimpleTask(TaskRequestDto dto, Long memberId) {
 		Long teamId = dto.getTeamId();
 
-		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
-			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
-		}
+		validateMemberTeamAccess(memberId, teamId);
 
 		Member member = memberRepository.getReferenceById(memberId);
 		Team team = teamRepository.getReferenceById(teamId);
 
-		Task task = Task.createTeamTask(dto.getContent(), member, team);
+		Task task = Task.createSimpleTeamTask(dto.getContent(), member, team);
 
 		return taskRepository.save(task).getId();
 	}
@@ -60,16 +58,22 @@ public class TeamTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public Long createDetailedTask(TaskRequestDto dto, Long currentMemberId) {
-		Member member = memberRepository.getReferenceById(currentMemberId);
+	public Long createDetailedTask(TaskRequestDto dto, Long memberId) {
+		Long teamId = dto.getTeamId();
 
-		Task task = Task.createDetailedTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
+		validateMemberTeamAccess(memberId, teamId);
+
+		Member member = memberRepository.getReferenceById(memberId);
+		Team team = teamRepository.getReferenceById(teamId);
+
+		Task task = Task.createDetailedTeamTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag(), team);
 
 		return taskRepository.save(task).getId();
 	}
 
 	/**
 	 * 할 일 목록 조회
+	 * FIXME 팀의 할 일 목록을 조회하도록 수정 필요
 	 */
 	public List<TaskResponseDto> getAllTasksByMemberId(Long currentMemberId, Long teamId) {
 		return taskRepository.findTeamTasks(currentMemberId, teamId).stream()
@@ -80,6 +84,7 @@ public class TeamTaskService implements TaskService {
 
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
+	 * FIXME 검증 로직 추가 필요
 	 */
 	@Override
 	public TaskResponseDto getTaskById(Long taskId) {
@@ -101,10 +106,17 @@ public class TeamTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public void updateTask(Long targetId, TaskRequestDto dto, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	public void updateTask(Long targetId, TaskRequestDto dto, Long memberId) {
+		Long teamId = dto.getTeamId();
+
+		validateMemberTeamAccess(memberId, teamId);
+
+		Task task = taskRepository.findById(targetId)
+				.orElseThrow(TaskNotFoundException::new);
 
 		task.updateContent(dto.getContent());
+		task.updateDeadline(dto.getDeadline());
+		task.updateFlag(dto.isFlag());
 	}
 
 	/**
@@ -112,8 +124,12 @@ public class TeamTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public void deleteTask(Long targetId, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	public void deleteTask(Long targetId, Long memberId) {
+		Task task = taskRepository.findById(targetId)
+				.orElseThrow(TaskNotFoundException::new);
+
+		Long teamId = task.getTeam().getId();
+		validateMemberTeamAccess(memberId, teamId);
 
 		taskRepository.delete(task);
 	}
@@ -123,24 +139,19 @@ public class TeamTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId) {
+		Task task = taskRepository.findById(targetId)
+				.orElseThrow(TaskNotFoundException::new);
+
+		Long teamId = task.getTeam().getId();
+		validateMemberTeamAccess(memberId, teamId);
 
 		task.updateDone(dto.isDone());
 	}
 
-	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
-		Task task = taskRepository.findById(taskId)
-				.orElseThrow(TaskNotFoundException::new);
-
-		validateTaskOwnership(task.getMember().getId(), currentMemberId);
-
-		return task;
-	}
-
-	private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
-		if (!taskOwnerId.equals(currentMemberId)) {
-			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
+	private void validateMemberTeamAccess(Long memberId, Long teamId) {
+		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
+			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
 		}
 	}
 
