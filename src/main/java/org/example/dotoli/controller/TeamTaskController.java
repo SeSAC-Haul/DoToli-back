@@ -30,12 +30,20 @@ public class TeamTaskController {
 
 	private final TeamTaskService teamTaskService;
 
-	@PostMapping("/tasks")
-	public ResponseEntity<Long> addNewTask(
+	@PostMapping("/tasks/simple")
+	public ResponseEntity<Long> addSimpleTask(
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		return ResponseEntity.ok(teamTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
+	}
+
+	@PostMapping("/tasks/detailed")
+	public ResponseEntity<Long> addDetailedTask(
+			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		return ResponseEntity.ok(teamTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
 	}
 
 	@GetMapping("/{teamId}/tasks")
