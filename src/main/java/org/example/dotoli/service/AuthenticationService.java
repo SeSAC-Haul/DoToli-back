@@ -46,6 +46,7 @@ public class AuthenticationService {
 	 * 로그인
 	 */
 	public CustomUserDetails authenticate(SignInRequestDto dto) {
+		// TODO 로그인 실패 시 발생하는 예외 처리
 		Authentication authenticate = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
 		);
@@ -54,9 +55,10 @@ public class AuthenticationService {
 	}
 
 	/**
-	 * 아이디 중복 체크
+	 * 이메일 중복 체크
 	 */
 	private void checkDuplicateEmail(String email) {
+		// TODO EXISTS 쿼리 사용 고려
 		memberRepository.findByEmail(email)
 				.ifPresent(m -> {
 					throw new DuplicateEmailException();

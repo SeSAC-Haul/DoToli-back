@@ -73,10 +73,11 @@ public class TeamTaskService implements TaskService {
 
 	/**
 	 * 할 일 목록 조회
-	 * FIXME 팀의 할 일 목록을 조회하도록 수정 필요
 	 */
-	public List<TaskResponseDto> getAllTasksByMemberId(Long currentMemberId, Long teamId) {
-		return taskRepository.findTeamTasks(currentMemberId, teamId).stream()
+	public List<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
+		return taskRepository.findTeamTasks(teamId).stream()
 				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
 						task.isFlag(), task.getCreatedAt()))
 				.toList();

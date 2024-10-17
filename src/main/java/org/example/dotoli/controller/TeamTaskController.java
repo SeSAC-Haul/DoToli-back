@@ -43,7 +43,7 @@ public class TeamTaskController {
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long teamId
 	) {
-		return ResponseEntity.ok(teamTaskService.getAllTasksByMemberId(userDetails.getMember().getId(), teamId));
+		return ResponseEntity.ok(teamTaskService.getAllTasksByTeamId(userDetails.getMember().getId(), teamId));
 	}
 
 	@PutMapping("/{targetId}")

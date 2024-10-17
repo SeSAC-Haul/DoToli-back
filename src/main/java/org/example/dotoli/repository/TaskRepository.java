@@ -31,8 +31,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	@Query("SELECT t "
 			+ "FROM Task t "
-			+ "WHERE t.member.id = :memberId AND t.team.id = :teamId "
-			+ "ORDER BY t.done ASC, t.id DESC")
-	List<Task> findTeamTasks(@Param("memberId") Long memberId, @Param("teamId") Long teamId);
+			+ "WHERE t.team.id = :teamId "
+			+ "ORDER BY t.done ASC, t.createdAt DESC")
+	List<Task> findTeamTasks(@Param("teamId") Long teamId);
 
 }
