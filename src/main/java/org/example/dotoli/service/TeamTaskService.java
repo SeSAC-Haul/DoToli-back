@@ -85,12 +85,13 @@ public class TeamTaskService implements TaskService {
 
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
-	 * FIXME 검증 로직 추가 필요
 	 */
 	@Override
-	public TaskResponseDto getTaskById(Long taskId) {
+	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
+
+		validateMemberTeamAccess(memberId, task.getTeam().getId());
 
 		return new TaskResponseDto(
 				task.getId(),
@@ -128,8 +129,8 @@ public class TeamTaskService implements TaskService {
 	public void deleteTask(Long targetId, Long memberId) {
 		Task task = taskRepository.findById(targetId)
 				.orElseThrow(TaskNotFoundException::new);
-
 		Long teamId = task.getTeam().getId();
+
 		validateMemberTeamAccess(memberId, teamId);
 
 		taskRepository.delete(task);

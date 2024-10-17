@@ -72,7 +72,7 @@ public class TaskController {
 			@PathVariable Long taskId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(personalTaskService.getTaskById(taskId));
+		return ResponseEntity.ok(personalTaskService.getTaskById(taskId, userDetails.getMember().getId()));
 	}
 
 	/**

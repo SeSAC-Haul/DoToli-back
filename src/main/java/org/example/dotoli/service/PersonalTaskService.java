@@ -72,7 +72,8 @@ public class PersonalTaskService implements TaskService {
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
 	@Override
-	public TaskResponseDto getTaskById(Long taskId) {
+	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
+		// FIXME 검증 로직 추가 필요 
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(() -> new IllegalArgumentException("Task not found"));
 		return new TaskResponseDto(

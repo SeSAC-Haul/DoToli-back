@@ -10,7 +10,7 @@ public interface TaskService {
 
 	Long createDetailedTask(TaskRequestDto dto, Long memberId);
 
-	TaskResponseDto getTaskById(Long taskId);
+	TaskResponseDto getTaskById(Long taskId, Long memberId);
 
 	void updateTask(Long taskId, TaskRequestDto dto, Long memberId);
 
