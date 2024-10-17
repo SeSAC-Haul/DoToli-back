@@ -2,7 +2,6 @@ package org.example.dotoli.controller;
 
 import java.time.LocalDate;
 
-import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -122,15 +121,6 @@ public class TaskController {
 		taskService.deleteTask(targetId, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
-	}
-
-	@GetMapping("/mypage")
-	public ResponseEntity<MyPageResponseDto> getMyPageInfo(
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		Long memberId = userDetails.getMember().getId();
-		MyPageResponseDto dto = taskService.getMyPageInfo(memberId);
-		return ResponseEntity.ok(dto);
 	}
 
 	/**
