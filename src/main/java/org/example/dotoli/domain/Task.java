@@ -66,7 +66,7 @@ public class Task {
 	}
 
 	public static Task createTeamTask(String content, Member member, Team team) {
-		return new Task(content, member, team);
+		return new Task(content, member, null, false, team);
 	}
 
 	// 엔티티가 저장되기 전에 자동으로 생성일 지정
