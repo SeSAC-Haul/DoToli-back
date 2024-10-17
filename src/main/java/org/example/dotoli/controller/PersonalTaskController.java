@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tasks")
-public class TaskController {
+public class PersonalTaskController {
 
 	private final PersonalTaskService personalTaskService;
 
