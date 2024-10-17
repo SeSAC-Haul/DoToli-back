@@ -17,6 +17,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
 
+/**
+ * QueryDSL을 사용하여 다양한 조건에 따라 할 일을 조건별로 선택하는 커스텀 리포지토리 구현 클래스입니다.
+ */
+
 @Repository
 public class TaskRepositoryImpl implements TaskRepositoryCustom {
 

@@ -134,7 +134,7 @@ public class TaskController {
 	}
 
 	/**
-	 * 선택된 정렬 조건
+	 * 조건 별로 선택된 정렬 조회
 	 */
 	@GetMapping("/filter")
 	public ResponseEntity<Page<TaskResponseDto>> filterTasks(

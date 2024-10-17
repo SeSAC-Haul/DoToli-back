@@ -172,7 +172,7 @@ public class TaskService {
 	}
 
 	/**
-	 * 필터링된 할 일 목록 조회
+	 * 조건 별로 선택된 정렬 조회
 	 */
 	public Page<TaskResponseDto> filterTasks(
 			Long memberId, Pageable pageable, Long teamId,
