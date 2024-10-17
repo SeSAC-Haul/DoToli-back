@@ -8,24 +8,27 @@ import lombok.Data;
 @Data
 public class MyPageResponseDto {
 
-    private String email;
+	private String email;
 
-    private String nickname;
+	private String nickname;
 
-    private Long totalTaskCount;
+	private Long totalTaskCount;
 
-    private Long completedTaskCount;
+	private Long completedTaskCount;
 
-    private Long achievementRate;
+	private Long achievementRate;
 
-    public MyPageResponseDto(
-            String email, String nickname, Long totalTaskCount, Long completedTaskCount, Long achievementRate
-    ) {
-        this.email = email;
-        this.nickname = nickname;
-        this.totalTaskCount = totalTaskCount;
-        this.completedTaskCount = completedTaskCount;
-        this.achievementRate = achievementRate;
-    }
+	public MyPageResponseDto(
+			Long totalTaskCount, Long completedTaskCount, Long achievementRate
+	) {
+		this.totalTaskCount = totalTaskCount;
+		this.completedTaskCount = completedTaskCount;
+		this.achievementRate = achievementRate;
+	}
+
+	public void setMemberInfo(String email, String nickname) {
+		this.email = email;
+		this.nickname = nickname;
+	}
 
 }

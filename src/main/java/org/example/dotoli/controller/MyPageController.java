@@ -1,5 +1,6 @@
 package org.example.dotoli.controller;
 
+import org.example.dotoli.domain.Member;
 import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.MyPageService;
@@ -25,8 +26,9 @@ public class MyPageController {
 	public ResponseEntity<MyPageResponseDto> getMyPageInfo(
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		Long memberId = userDetails.getMember().getId();
-		MyPageResponseDto dto = myPageService.getMyPageInfo(memberId);
+		Member member = userDetails.getMember();
+		MyPageResponseDto dto = myPageService.getMyPageInfo(member.getId());
+		dto.setMemberInfo(member.getEmail(), member.getNickname());
 		return ResponseEntity.ok(dto);
 	}
 

@@ -25,43 +25,22 @@ public class MyPageService {
 	 * 사용자 ID에 해당하는 마이페이지 정보를 MyPageResponseDto에 담아 반환
 	 */
 	public MyPageResponseDto getMyPageInfo(Long memberId) {
-		Member member = memberRepository.getReferenceById(memberId);
+		Long totalTasksCount = taskRepository.countAllTasksByMemberId(memberId);
+		Long completedTasksCount = taskRepository.countCompletedTasksByMemberId(memberId);
+		Long completionRate = calculateCompletionRate(totalTasksCount, completedTasksCount);
 
-		Long totalTasks = getTotalTaskCountForMember(memberId);
-		Long completedTasks = getCompletedTaskCountForMember(memberId);
-		Long completionRate = calculateCompletionRate(memberId);
-
-		return new MyPageResponseDto(member.getEmail(), member.getNickname(), totalTasks, completedTasks,
-				completionRate);
-
-	}
-
-	/**
-	 * 사용자의 모든 할 일 개수 조회
-	 */
-	public Long getTotalTaskCountForMember(Long memberId) {
-		return taskRepository.countAllTasksByMemberId(memberId);
-	}
-
-	/**
-	 * 사용자의 완료한 할 일 개수 조회
-	 */
-	public Long getCompletedTaskCountForMember(Long memberId) {
-		return taskRepository.countCompletedTasksByMemberId(memberId);
+		return new MyPageResponseDto(totalTasksCount, completedTasksCount, completionRate);
 	}
 
 	/**
 	 * 달성률 계산
 	 */
-	private Long calculateCompletionRate(Long memberId) {
-		long totalTasks = getTotalTaskCountForMember(memberId);
-		long completedTasks = getCompletedTaskCountForMember(memberId);
-
-		if (totalTasks == 0) {
+	private Long calculateCompletionRate(Long totalTasksCount, Long completedTasksCount) {
+		if (totalTasksCount == 0) {
 			return 0L;
 		}
 
-		return (completedTasks * 100) / totalTasks;
+		return (completedTasksCount * 100) / totalTasksCount;
 	}
 
 }
