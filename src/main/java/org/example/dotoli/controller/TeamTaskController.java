@@ -25,12 +25,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/teams/{teamId}/tasks")
+@RequestMapping("/api/teams")
 public class TeamTaskController {
 
 	private final TeamTaskService teamTaskService;
 
-	@PostMapping
+	@PostMapping("/tasks")
 	public ResponseEntity<Long> addNewTask(
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
@@ -38,7 +38,7 @@ public class TeamTaskController {
 		return ResponseEntity.ok(teamTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
 	}
 
-	@GetMapping
+	@GetMapping("/{teamId}/tasks")
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long teamId
@@ -46,35 +46,32 @@ public class TeamTaskController {
 		return ResponseEntity.ok(teamTaskService.getAllTasksByTeamId(userDetails.getMember().getId(), teamId));
 	}
 
-	@PutMapping("/{targetId}")
+	@PutMapping("/tasks/{targetId}")
 	public ResponseEntity<Void> updateTask(
 			@PathVariable Long targetId,
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long teamId
+			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping("/{targetId}/toggle")
+	@PutMapping("/tasks/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
 			@PathVariable Long targetId,
 			@RequestBody @Valid ToggleRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long teamId
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		teamTaskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/{targetId}")
+	@DeleteMapping("/tasks/{targetId}")
 	public ResponseEntity<Void> deleteTask(
 			@PathVariable Long targetId,
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long teamId
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		teamTaskService.deleteTask(targetId, userDetails.getMember().getId());
 
