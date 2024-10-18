@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class ToggleRequestDto {
 
-    @NotNull
-    private boolean done;
+	@NotNull
+	private boolean done;
 
 }

@@ -8,8 +8,9 @@ import org.example.dotoli.config.error.exception.TeamNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
-import org.example.dotoli.dto.team.TeamResponseDto;
+import org.example.dotoli.dto.member.MemberResponseDto;
 import org.example.dotoli.dto.team.TeamRequestDto;
+import org.example.dotoli.dto.team.TeamResponseDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TeamMemberRepository;
 import org.example.dotoli.repository.TeamRepository;
@@ -64,6 +65,13 @@ public class TeamService {
 				.orElseThrow(TeamNotFoundException::new);
 
 		return new TeamResponseDto(team.getId(), team.getTeamName());
+	}
+
+	/**
+	 * 팀에 소속된 멤버 조회
+	 */
+	public List<MemberResponseDto> getMembersByTeamId(Long teamId) {
+		return teamMemberRepository.findMembersByTeamId(teamId);
 	}
 
 	private void validateMemberTeamAccess(Long memberId, Long teamId) {

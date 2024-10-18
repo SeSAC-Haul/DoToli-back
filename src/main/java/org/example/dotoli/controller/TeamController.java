@@ -2,6 +2,7 @@ package org.example.dotoli.controller;
 
 import java.util.List;
 
+import org.example.dotoli.dto.member.MemberResponseDto;
 import org.example.dotoli.dto.team.TeamRequestDto;
 import org.example.dotoli.dto.team.TeamResponseDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
@@ -45,6 +46,11 @@ public class TeamController {
 			@PathVariable Long teamId
 	) {
 		return ResponseEntity.ok(teamService.getTeamInfo(userDetails.getMember().getId(), teamId));
+	}
+
+	@GetMapping("/{teamId}/members")
+	public ResponseEntity<List<MemberResponseDto>> getTeamMembers(@PathVariable Long teamId) {
+		return ResponseEntity.ok(teamService.getMembersByTeamId(teamId));
 	}
 
 }
