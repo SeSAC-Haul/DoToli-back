@@ -6,7 +6,6 @@ import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Task;
-import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
@@ -25,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class TaskService {
 
-    private final TaskRepository taskRepository;
+	private final TaskRepository taskRepository;
 
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
 	/**
 	 * 간단한 할 일 추가
@@ -94,25 +93,25 @@ public class TaskService {
 		task.updateFlag(dto.isFlag());
 	}
 
-    /**
-     * 할 일 삭제
-     */
-    @Transactional
-    public void deleteTask(Long targetId, Long currentMemberId) {
-        Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	/**
+	 * 할 일 삭제
+	 */
+	@Transactional
+	public void deleteTask(Long targetId, Long currentMemberId) {
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
-        taskRepository.delete(task);
-    }
+		taskRepository.delete(task);
+	}
 
-    /**
-     * 할 일 완료 상태 변경
-     */
-    @Transactional
-    public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
-        Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	/**
+	 * 할 일 완료 상태 변경
+	 */
+	@Transactional
+	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
+		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
 
-        task.updateDone(dto.isDone());
-    }
+		task.updateDone(dto.isDone());
+	}
 
 	/**
 	 * 특정 할 일 조회 및 소유권 확인
@@ -134,38 +133,5 @@ public class TaskService {
 			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
 		}
 	}
-
-    public MyPageResponseDto getMyPageInfo(Long memberId) {
-        Member member = memberRepository.getReferenceById(memberId);
-
-        Long totalTasks = getTotalTaskCountForMember(memberId);
-        Long completedTasks = getCompletedTaskCountForMember(memberId);
-        Long completionRate = calculateCompletionRate(memberId);
-
-        return new MyPageResponseDto(member.getEmail(), member.getNickname(), totalTasks, completedTasks,
-                completionRate);
-
-    }
-
-    @Transactional(readOnly = true)
-    public Long getTotalTaskCountForMember(Long memberId) {
-        return taskRepository.countAllTasksByMemberId(memberId);
-    }
-
-    @Transactional(readOnly = true)
-    public Long getCompletedTaskCountForMember(Long memberId) {
-        return taskRepository.countCompletedTasksByMemberId(memberId);
-    }
-
-    public Long calculateCompletionRate(Long memberId) {
-        long totalTasks = getTotalTaskCountForMember(memberId);
-        long completedTasks = getCompletedTaskCountForMember(memberId);
-
-        if (totalTasks == 0) {
-            return 0L;
-        }
-
-        return (completedTasks * 100) / totalTasks;
-    }
 
 }
