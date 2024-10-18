@@ -1,6 +1,6 @@
 package org.example.dotoli.service;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
@@ -11,6 +11,9 @@ import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
+import org.example.dotoli.repository.TaskRepositoryCustom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,8 @@ public class TaskService {
 	private final TaskRepository taskRepository;
 
 	private final MemberRepository memberRepository;
+
+	private final TaskRepositoryCustom taskRepositoryCustom;
 
 	/**
 	 * 간단한 할 일 추가
@@ -51,18 +56,16 @@ public class TaskService {
 	/**
 	 * 사용자의 모든 할 일 목록 조회
 	 */
-	public List<TaskResponseDto> getAllTasks(Long currentMemberId) {
-		List<Task> tasks = taskRepository.findTasksByMemberId(currentMemberId);
-		return tasks.stream()
-				.map(task -> new TaskResponseDto(
-						task.getId(),
-						task.getContent(),
-						task.isDone(),
-						task.getDeadline(),
-						task.isFlag(),
-						task.getCreatedAt()   // DTO로 변환하는 과정 직접 작성
-				))
-				.toList();
+	public Page<TaskResponseDto> getAllTasks(Long memberId, Pageable pageable) {
+		Page<Task> tasks = taskRepository.findTasksByMemberId(memberId, pageable);
+		return tasks.map(task -> new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		));
 	}
 
 	/**
@@ -132,6 +135,29 @@ public class TaskService {
 		if (!taskOwnerId.equals(currentMemberId)) {
 			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
 		}
+	}
+
+	/**
+	 * 조건 별로 선택된 정렬 조회
+	 */
+	public Page<TaskResponseDto> filterTasks(
+			Long memberId, Pageable pageable, Long teamId,
+			LocalDate startDate, LocalDate endDate,
+			LocalDate deadline, Boolean flag,
+			LocalDate createdAt, Boolean done) {
+
+		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
+				memberId, pageable, teamId, startDate,
+				endDate, deadline, flag, createdAt, done);
+
+		return tasks.map(task -> new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		));
 	}
 
 }

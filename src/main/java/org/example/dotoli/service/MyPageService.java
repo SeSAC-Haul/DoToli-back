@@ -1,6 +1,5 @@
 package org.example.dotoli.service;
 
-import org.example.dotoli.domain.Member;
 import org.example.dotoli.dto.member.MyPageResponseDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;

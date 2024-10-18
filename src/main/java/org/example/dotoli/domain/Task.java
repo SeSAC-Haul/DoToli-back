@@ -65,6 +65,10 @@ public class Task {
 		return new Task(content, member, deadline, flag, null);
 	}
 
+	public static Task createTeamTask(String content, Member member, Team team) {
+		return new Task(content, member, null, false, team);
+	}
+
 	// 엔티티가 저장되기 전에 자동으로 생성일 지정
 	@PrePersist
 	protected void onCreate() {
