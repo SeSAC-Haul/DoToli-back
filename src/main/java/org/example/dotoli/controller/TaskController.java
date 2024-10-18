@@ -1,12 +1,15 @@
 package org.example.dotoli.controller;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.TaskService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -57,10 +61,14 @@ public class TaskController {
 	 * 사용자의 모든 할 일 목록 조회
 	 */
 	@GetMapping
-	public ResponseEntity<List<TaskResponseDto>> getAllTask(
-			@AuthenticationPrincipal CustomUserDetails userDetails
+	public ResponseEntity<Page<TaskResponseDto>> getAllTask(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "5") int size
 	) {
-		return ResponseEntity.ok(taskService.getAllTasks(userDetails.getMember().getId()));
+		Pageable pageable = PageRequest.of(page, size);
+		Page<TaskResponseDto> tasks = taskService.getAllTasks(userDetails.getMember().getId(), pageable);
+		return ResponseEntity.ok(tasks);
 	}
 
 	/**
@@ -113,6 +121,31 @@ public class TaskController {
 		taskService.deleteTask(targetId, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * 조건 별로 선택된 정렬 조회
+	 */
+	@GetMapping("/filter")
+	public ResponseEntity<Page<TaskResponseDto>> filterTasks(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam(required = false) Long teamId,
+			@RequestParam(required = false) LocalDate startDate,
+			@RequestParam(required = false) LocalDate endDate,
+			@RequestParam(required = false) LocalDate deadline,
+			@RequestParam(required = false) Boolean flag,
+			@RequestParam(required = false) LocalDate createdAt,
+			@RequestParam(required = false) Boolean done,
+			@RequestParam(defaultValue = "0") int page
+	) {
+		int size = 5;
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<TaskResponseDto> filteredTasks = taskService.filterTasks(
+				userDetails.getMember().getId(), pageable, teamId,
+				startDate, endDate, deadline, flag, createdAt, done);
+
+		return ResponseEntity.ok(filteredTasks);
 	}
 
 }

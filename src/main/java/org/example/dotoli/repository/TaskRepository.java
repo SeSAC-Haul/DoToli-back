@@ -1,8 +1,8 @@
 package org.example.dotoli.repository;
 
-import java.util.List;
-
 import org.example.dotoli.domain.Task;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,16 +17,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			"FROM Task t " +
 			"WHERE t.member.id = :memberId " +
 			"ORDER BY t.done ASC, t.createdAt DESC")
-	List<Task> findTasksByMemberId(@Param("memberId") Long memberId);
+	Page<Task> findTasksByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
-    @Query("SELECT COUNT(t) " +
-            "FROM Task t " +
-            "WHERE t.member.id = :memberId")
-    Long countAllTasksByMemberId(@Param("memberId") Long memberId);
+	@Query("SELECT COUNT(t) " +
+			"FROM Task t " +
+			"WHERE t.member.id = :memberId")
+	Long countAllTasksByMemberId(@Param("memberId") Long memberId);
 
-    @Query("SELECT COUNT(t) " +
-            "FROM Task t " +
-            "WHERE t.member.id = :memberId AND t.done = true")
-    Long countCompletedTasksByMemberId(@Param("memberId") Long memberId);
+	@Query("SELECT COUNT(t) " +
+			"FROM Task t " +
+			"WHERE t.member.id = :memberId AND t.done = true")
+	Long countCompletedTasksByMemberId(@Param("memberId") Long memberId);
 
 }
