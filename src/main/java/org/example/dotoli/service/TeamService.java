@@ -58,6 +58,9 @@ public class TeamService {
 		return teamList.stream().map(team -> new TeamResponseDto(team.getId(), team.getTeamName())).toList();
 	}
 
+	/**
+	 * 특정 팀 정보 조회
+	 */
 	public TeamResponseDto getTeamInfo(Long memberId, Long teamId) {
 		validateMemberTeamAccess(memberId, teamId);
 
