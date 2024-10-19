@@ -13,6 +13,14 @@ import org.springframework.data.repository.query.Param;
  */
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
+	/**
+	 * 회원의 팀 소속 여부 확인
+	 */
+	boolean existsByMemberIdAndTeamId(Long memberId, Long teamId);
+
+	/**
+	 * 팀 소속 회원 목록 조회
+	 */
 	@Query("SELECT new org.example.dotoli.dto.member.MemberResponseDto(m.id, m.email, m.nickname) " +
 			"FROM TeamMember tm " +
 			"JOIN tm.member m " +

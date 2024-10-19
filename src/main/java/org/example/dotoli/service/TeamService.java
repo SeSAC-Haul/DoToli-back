@@ -3,6 +3,8 @@ package org.example.dotoli.service;
 import java.util.List;
 
 import org.example.dotoli.config.error.exception.DuplicateTeamNameException;
+import org.example.dotoli.config.error.exception.ForbiddenException;
+import org.example.dotoli.config.error.exception.TeamNotFoundException;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.domain.TeamMember;
@@ -57,12 +59,15 @@ public class TeamService {
 	}
 
 	/**
-	 * 팀 이름 중복 체크
+	 * 특정 팀 정보 조회
 	 */
-	private void checkDuplicateTeamName(String teamName) {
-		if (teamRepository.existsByTeamName(teamName)) {
-			throw new DuplicateTeamNameException();
-		}
+	public TeamResponseDto getTeamInfo(Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
+		Team team = teamRepository.findById(teamId)
+				.orElseThrow(TeamNotFoundException::new);
+
+		return new TeamResponseDto(team.getId(), team.getTeamName());
 	}
 
 	/**
@@ -70,6 +75,20 @@ public class TeamService {
 	 */
 	public List<MemberResponseDto> getMembersByTeamId(Long teamId) {
 		return teamMemberRepository.findMembersByTeamId(teamId);
+	}
+
+	private void validateMemberTeamAccess(Long memberId, Long teamId) {
+		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId))
+			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
+	}
+
+	/**
+	 * 팀 이름 중복 체크
+	 */
+	private void checkDuplicateTeamName(String teamName) {
+		if (teamRepository.existsByTeamName(teamName)) {
+			throw new DuplicateTeamNameException();
+		}
 	}
 
 }

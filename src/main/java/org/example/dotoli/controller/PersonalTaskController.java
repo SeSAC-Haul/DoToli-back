@@ -6,7 +6,7 @@ import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
-import org.example.dotoli.service.TaskService;
+import org.example.dotoli.service.PersonalTaskService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +31,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tasks")
-public class TaskController {
+public class PersonalTaskController {
 
-	private final TaskService taskService;
+	private final PersonalTaskService personalTaskService;
 
 	/**
 	 * 간단한 할 일 추가
@@ -43,7 +43,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.saveSimpleTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.saveDetailedTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class TaskController {
 			@RequestParam(defaultValue = "5") int size
 	) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<TaskResponseDto> tasks = taskService.getAllTasks(userDetails.getMember().getId(), pageable);
+		Page<TaskResponseDto> tasks = personalTaskService.getAllTasksByMemberId(userDetails.getMember().getId(), pageable);
 		return ResponseEntity.ok(tasks);
 	}
 
@@ -79,7 +79,7 @@ public class TaskController {
 			@PathVariable Long taskId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(taskService.getTaskById(taskId));
+		return ResponseEntity.ok(personalTaskService.getTaskById(taskId, userDetails.getMember().getId()));
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class TaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		taskService.updateTask(targetId, dto, userDetails.getMember().getId());
+		personalTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -105,7 +105,7 @@ public class TaskController {
 			@RequestBody @Valid ToggleRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		taskService.toggleDone(targetId, dto, userDetails.getMember().getId());
+		personalTaskService.toggleDone(targetId, dto, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -118,7 +118,7 @@ public class TaskController {
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		taskService.deleteTask(targetId, userDetails.getMember().getId());
+		personalTaskService.deleteTask(targetId, userDetails.getMember().getId());
 
 		return ResponseEntity.ok().build();
 	}
@@ -141,7 +141,7 @@ public class TaskController {
 		int size = 5;
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<TaskResponseDto> filteredTasks = taskService.filterTasks(
+		Page<TaskResponseDto> filteredTasks = personalTaskService.filterTasks(
 				userDetails.getMember().getId(), pageable, teamId,
 				startDate, endDate, deadline, flag, createdAt, done);
 

@@ -1,7 +1,6 @@
 package org.example.dotoli.service;
 
 import org.example.dotoli.dto.member.MyPageResponseDto;
-import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 public class MyPageService {
 
 	private final TaskRepository taskRepository;
-
-	private final MemberRepository memberRepository;
 
 	/**
 	 * 사용자 ID에 해당하는 마이페이지 정보를 MyPageResponseDto에 담아 반환

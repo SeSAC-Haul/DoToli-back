@@ -31,7 +31,6 @@ public class TaskResponseDto {
 		this.deadline = deadline;
 		this.flag = flag;
 		this.createdAt = createdAt;
-
 	}
 
 }
