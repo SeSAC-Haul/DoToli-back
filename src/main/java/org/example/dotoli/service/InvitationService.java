@@ -2,11 +2,14 @@ package org.example.dotoli.service;
 
 import org.example.dotoli.config.error.exception.DuplicateInvitationException;
 import org.example.dotoli.config.error.exception.ForbiddenException;
+import org.example.dotoli.config.error.exception.InvitationNotFoundException;
 import org.example.dotoli.config.error.exception.MemberAlreadyInTeamException;
+import org.example.dotoli.config.error.exception.TeamNotFoundException;
 import org.example.dotoli.domain.Invitation;
 import org.example.dotoli.domain.InvitationStatus;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Team;
+import org.example.dotoli.domain.TeamMember;
 import org.example.dotoli.dto.invitation.InvitationRequestDto;
 import org.example.dotoli.repository.InvitationRepository;
 import org.example.dotoli.repository.MemberRepository;
@@ -46,6 +49,38 @@ public class InvitationService {
 		Invitation invitation = Invitation.createNew(team, inviter, invitee);
 
 		return invitationRepository.save(invitation).getId();
+	}
+
+	/**
+	 * 초대 수락
+	 */
+	@Transactional
+	public void acceptInvitation(Long invitationId, Long inviteeId, Long teamId) {
+		Invitation invitation = invitationRepository.findById(invitationId)
+				.orElseThrow(InvitationNotFoundException::new);
+		Team team = teamRepository.findById(teamId)
+				.orElseThrow(TeamNotFoundException::new);
+		Member invitee = memberRepository.getReferenceById(inviteeId);
+
+		// TODO: 검증 로직 추가 필요
+
+		invitation.accept();
+		TeamMember teamMember = TeamMember.createNew(invitee, team);
+
+		teamMemberRepository.save(teamMember);
+	}
+
+	/**
+	 * 초대 거절
+	 */
+	@Transactional
+	public void rejectInvitation(Long invitationId, Long inviteeId, Long teamId) {
+		Invitation invitation = invitationRepository.findById(invitationId)
+				.orElseThrow(InvitationNotFoundException::new);
+
+		// TODO: 검증 로직 추가 필요
+
+		invitation.reject();
 	}
 
 	private void validateInvitation(Long inviterId, Long teamId, Long inviteeId) {

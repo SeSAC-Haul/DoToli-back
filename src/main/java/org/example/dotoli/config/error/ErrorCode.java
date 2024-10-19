@@ -22,7 +22,8 @@ public enum ErrorCode {
 
 	TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T1", "할 일 정보가 존재하지 않습니다."),
 
-	DUPLICATE_INVITATION(HttpStatus.CONFLICT, "I1", "이미 대기 중인 초대가 있습니다.");
+	DUPLICATE_INVITATION(HttpStatus.CONFLICT, "I1", "이미 대기 중인 초대가 있습니다."),
+	INVITATION_NOT_FOUND(HttpStatus.NOT_FOUND, "I2", "초대 정보를 찾을 수 없습니다.");
 
 	private final HttpStatus status;
 
