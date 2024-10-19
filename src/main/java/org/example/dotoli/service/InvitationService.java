@@ -1,6 +1,8 @@
 package org.example.dotoli.service;
 
+import org.example.dotoli.config.error.exception.DuplicateInvitationException;
 import org.example.dotoli.config.error.exception.ForbiddenException;
+import org.example.dotoli.config.error.exception.MemberAlreadyInTeamException;
 import org.example.dotoli.domain.Invitation;
 import org.example.dotoli.domain.InvitationStatus;
 import org.example.dotoli.domain.Member;
@@ -60,13 +62,13 @@ public class InvitationService {
 
 	private void validateInviteeNotInTeam(Long teamId, Long inviteeId) {
 		if (teamMemberRepository.existsByMemberIdAndTeamId(inviteeId, teamId)) {
-			throw new IllegalArgumentException();
+			throw new MemberAlreadyInTeamException();
 		}
 	}
 
 	private void validateNoPendingInvitation(Long teamId, Long inviteeId) {
 		if (invitationRepository.existsByTeamIdAndInviteeIdAndStatus(teamId, inviteeId, InvitationStatus.PENDING)) {
-			throw new IllegalArgumentException();
+			throw new DuplicateInvitationException();
 		}
 	}
 

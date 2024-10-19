@@ -15,11 +15,14 @@ public enum ErrorCode {
 
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M1", "회원 정보가 존재하지 않습니다."),
 	DUPLICATE_EMAIL(HttpStatus.CONFLICT, "M2", "이미 사용 중인 이메일 주소입니다."),
+	MEMBER_ALREADY_IN_TEAM(HttpStatus.CONFLICT, "M3", "이미 팀에 소속된 회원입니다."),
 
 	DUPLICATE_TEAM_NAME(HttpStatus.CONFLICT, "TE1", "이미 사용 중인 팀 이름입니다."),
 	TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "TE2", "팀 정보가 존재하지 않습니다."),
 
-	TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T1", "할 일 정보가 존재하지 않습니다.");
+	TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T1", "할 일 정보가 존재하지 않습니다."),
+
+	DUPLICATE_INVITATION(HttpStatus.CONFLICT, "I1", "이미 대기 중인 초대가 있습니다.");
 
 	private final HttpStatus status;
 
