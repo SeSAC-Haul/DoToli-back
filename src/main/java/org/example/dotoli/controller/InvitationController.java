@@ -29,4 +29,26 @@ public class InvitationController {
 		return ResponseEntity.ok(invitationService.createInvitation(dto, userDetails.getMember().getId(), teamId));
 	}
 
+	@PostMapping("/{invitationId}/accept")
+	public ResponseEntity<Void> acceptInvitation(
+			@PathVariable("teamId") Long teamId,
+			@PathVariable("invitationId") Long invitationId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		invitationService.acceptInvitation(invitationId, userDetails.getMember().getId(), teamId);
+
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/{invitationId}/reject")
+	public ResponseEntity<Void> rejectInvitation(
+			@PathVariable("teamId") Long teamId,
+			@PathVariable("invitationId") Long invitationId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		invitationService.rejectInvitation(invitationId, userDetails.getMember().getId(), teamId);
+		
+		return ResponseEntity.ok().build();
+	}
+
 }
