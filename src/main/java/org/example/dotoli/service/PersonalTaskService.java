@@ -34,7 +34,7 @@ public class PersonalTaskService implements TaskService {
 	private final TaskRepositoryCustom taskRepositoryCustom;
 
 	/**
-	 * 상세한 할 일 추가
+	 * 할 일 추가
 	 */
 	@Override
 	@Transactional

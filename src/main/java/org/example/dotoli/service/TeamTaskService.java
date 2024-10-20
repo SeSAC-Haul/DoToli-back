@@ -36,7 +36,7 @@ public class TeamTaskService implements TaskService {
 	private final TeamMemberRepository teamMemberRepository;
 
 	/**
-	 * 상세한 할 일 추가
+	 * 할 일 추가
 	 */
 	@Override
 	@Transactional
