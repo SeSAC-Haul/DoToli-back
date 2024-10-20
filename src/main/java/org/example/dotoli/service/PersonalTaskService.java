@@ -38,8 +38,8 @@ public class PersonalTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public Long createTask(TaskRequestDto dto, Long currentMemberId) {
-		Member member = memberRepository.getReferenceById(currentMemberId);
+	public Long createTask(TaskRequestDto dto, Long memberId) {
+		Member member = memberRepository.getReferenceById(memberId);
 		Task task = Task.createPersonalTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
 		return taskRepository.save(task).getId();
 	}
@@ -82,8 +82,8 @@ public class PersonalTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public void updateTask(Long taskId, TaskRequestDto dto, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(taskId, currentMemberId);
+	public void updateTask(Long taskId, TaskRequestDto dto, Long memberId) {
+		Task task = findTaskAndValidateOwnership(taskId, memberId);
 
 		task.updateContent(dto.getContent());
 		task.updateDeadline(dto.getDeadline());
@@ -95,8 +95,8 @@ public class PersonalTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public void deleteTask(Long targetId, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	public void deleteTask(Long targetId, Long memberId) {
+		Task task = findTaskAndValidateOwnership(targetId, memberId);
 
 		taskRepository.delete(task);
 	}
@@ -106,8 +106,8 @@ public class PersonalTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public void toggleDone(Long targetId, ToggleRequestDto dto, Long currentMemberId) {
-		Task task = findTaskAndValidateOwnership(targetId, currentMemberId);
+	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId) {
+		Task task = findTaskAndValidateOwnership(targetId, memberId);
 
 		task.updateDone(dto.isDone());
 	}
@@ -115,11 +115,11 @@ public class PersonalTaskService implements TaskService {
 	/**
 	 * 특정 할 일 조회 및 소유권 확인
 	 */
-	private Task findTaskAndValidateOwnership(Long taskId, Long currentMemberId) {
+	private Task findTaskAndValidateOwnership(Long taskId, Long memberId) {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
 
-		validateTaskOwnership(task.getMember().getId(), currentMemberId);
+		validateTaskOwnership(task.getMember().getId(), memberId);
 
 		return task;
 	}
