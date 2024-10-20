@@ -34,10 +34,10 @@ public class TeamTaskController {
 	private final TeamTaskService teamTaskService;
 
 	/**
-	 * 상세한 팀 할 일 추가
+	 * 할 일 추가
 	 */
-	@PostMapping("/tasks/detailed")
-	public ResponseEntity<Long> addDetailedTask(
+	@PostMapping
+	public ResponseEntity<Long> addTask(
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {

@@ -36,10 +36,10 @@ public class PersonalTaskController {
 	private final PersonalTaskService personalTaskService;
 
 	/**
-	 * 상세한 할 일 추가
+	 * 할 일 추가
 	 */
-	@PostMapping("/detailed")
-	public ResponseEntity<Long> addDetailedTask(
+	@PostMapping
+	public ResponseEntity<Long> addTask(
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
