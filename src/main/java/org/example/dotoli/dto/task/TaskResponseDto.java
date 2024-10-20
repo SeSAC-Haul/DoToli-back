@@ -1,6 +1,5 @@
 package org.example.dotoli.dto.task;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Data;
@@ -19,11 +18,11 @@ public class TaskResponseDto {
 
 	private LocalDateTime createdAt;
 
-	private LocalDate deadline;
+	private LocalDateTime deadline; // LocalDatetime -> LocalDateTime 수정
 
 	private boolean flag;
 
-	public TaskResponseDto(Long id, String content, boolean done, LocalDate deadline,
+	public TaskResponseDto(Long id, String content, boolean done, LocalDateTime deadline,
 			boolean flag, LocalDateTime createdAt) {
 		this.id = id;
 		this.content = content;
