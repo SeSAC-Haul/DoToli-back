@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/tasks") // TODO: URI 고민 필요, /api/personal/tasks
 public class PersonalTaskController {
 
 	private final PersonalTaskService personalTaskService;
@@ -56,7 +56,8 @@ public class PersonalTaskController {
 			@RequestParam(defaultValue = "5") int size
 	) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<TaskResponseDto> tasks = personalTaskService.getAllTasksByMemberId(userDetails.getMember().getId(), pageable);
+		Page<TaskResponseDto> tasks = personalTaskService.getAllTasksByMemberId(userDetails.getMember().getId(),
+				pageable);
 		return ResponseEntity.ok(tasks);
 	}
 
