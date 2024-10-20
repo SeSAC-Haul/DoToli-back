@@ -45,7 +45,6 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Team team;
 
-	// 공통 할 일 생성 메서드
 	private Task(String content, Member member, LocalDate deadline, boolean flag, Team team) {
 		this.content = content;
 		this.member = member;
