@@ -40,7 +40,7 @@ public class TeamTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public Long createDetailedTask(TaskRequestDto dto, Long memberId) {
+	public Long createTask(TaskRequestDto dto, Long memberId) {
 		Long teamId = dto.getTeamId();
 
 		validateMemberTeamAccess(memberId, teamId);

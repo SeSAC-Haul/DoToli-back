@@ -41,7 +41,7 @@ public class TeamTaskController {
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(teamTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**

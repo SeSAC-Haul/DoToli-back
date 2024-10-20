@@ -38,7 +38,7 @@ public class PersonalTaskService implements TaskService {
 	 */
 	@Override
 	@Transactional
-	public Long createDetailedTask(TaskRequestDto dto, Long currentMemberId) {
+	public Long createTask(TaskRequestDto dto, Long currentMemberId) {
 		Member member = memberRepository.getReferenceById(currentMemberId);
 		Task task = Task.createPersonalTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag());
 		return taskRepository.save(task).getId();

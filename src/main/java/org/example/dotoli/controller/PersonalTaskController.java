@@ -43,7 +43,7 @@ public class PersonalTaskController {
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(personalTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.createTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**

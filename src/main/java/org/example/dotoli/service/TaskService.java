@@ -6,7 +6,7 @@ import org.example.dotoli.dto.task.ToggleRequestDto;
 
 public interface TaskService {
 
-	Long createDetailedTask(TaskRequestDto dto, Long memberId);
+	Long createTask(TaskRequestDto dto, Long memberId);
 
 	TaskResponseDto getTaskById(Long taskId, Long memberId);
 
