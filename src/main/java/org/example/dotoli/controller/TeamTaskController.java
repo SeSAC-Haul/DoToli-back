@@ -36,7 +36,7 @@ public class TeamTaskController {
 	/**
 	 * 할 일 추가
 	 */
-	@PostMapping
+	@PostMapping("/tasks")
 	public ResponseEntity<Long> addTask(
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
