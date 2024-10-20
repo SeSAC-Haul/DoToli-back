@@ -34,17 +34,6 @@ public class PersonalTaskService implements TaskService {
 	private final TaskRepositoryCustom taskRepositoryCustom;
 
 	/**
-	 * 간단한 할 일 추가
-	 */
-	@Override
-	@Transactional
-	public Long createSimpleTask(TaskRequestDto dto, Long currentMemberId) {
-		Member member = memberRepository.getReferenceById(currentMemberId);
-		Task task = Task.createSimplePersonalTask(dto.getContent(), member);
-		return taskRepository.save(task).getId();
-	}
-
-	/**
 	 * 상세한 할 일 추가
 	 */
 	@Override

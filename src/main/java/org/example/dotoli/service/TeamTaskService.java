@@ -36,24 +36,6 @@ public class TeamTaskService implements TaskService {
 	private final TeamMemberRepository teamMemberRepository;
 
 	/**
-	 * 간단한 할 일 추가
-	 */
-	@Override
-	@Transactional
-	public Long createSimpleTask(TaskRequestDto dto, Long memberId) {
-		Long teamId = dto.getTeamId();
-
-		validateMemberTeamAccess(memberId, teamId);
-
-		Member member = memberRepository.getReferenceById(memberId);
-		Team team = teamRepository.getReferenceById(teamId);
-
-		Task task = Task.createSimpleTeamTask(dto.getContent(), member, team);
-
-		return taskRepository.save(task).getId();
-	}
-
-	/**
 	 * 상세한 할 일 추가
 	 */
 	@Override

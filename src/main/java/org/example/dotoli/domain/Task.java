@@ -55,10 +55,6 @@ public class Task {
 		this.done = false;
 	}
 
-	// 간단한 할 일 생성 메소드
-	public static Task createSimplePersonalTask(String content, Member member) {
-		return new Task(content, member, null, false, null);
-	}
 
 	/**
 	 * 개인 할 일 생성 메서드

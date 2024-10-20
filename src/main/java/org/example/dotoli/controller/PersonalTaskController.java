@@ -36,17 +36,6 @@ public class PersonalTaskController {
 	private final PersonalTaskService personalTaskService;
 
 	/**
-	 * 간단한 할 일 추가
-	 */
-	@PostMapping("/simple")
-	public ResponseEntity<Long> addSimpleTask(
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		return ResponseEntity.ok(personalTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
-	}
-
-	/**
 	 * 상세한 할 일 추가
 	 */
 	@PostMapping("/detailed")
