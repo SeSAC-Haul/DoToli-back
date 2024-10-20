@@ -34,25 +34,14 @@ public class TeamTaskController {
 	private final TeamTaskService teamTaskService;
 
 	/**
-	 * 간단한 팀 할 일 추가
+	 * 할 일 추가
 	 */
-	@PostMapping("/tasks/simple")
-	public ResponseEntity<Long> addSimpleTask(
+	@PostMapping("/tasks")
+	public ResponseEntity<Long> addTask(
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(teamTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
-	}
-
-	/**
-	 * 상세한 팀 할 일 추가
-	 */
-	@PostMapping("/tasks/detailed")
-	public ResponseEntity<Long> addDetailedTask(
-			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		return ResponseEntity.ok(teamTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**

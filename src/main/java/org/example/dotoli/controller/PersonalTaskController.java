@@ -30,31 +30,20 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/tasks") // TODO: URI 고민 필요, /api/personal/tasks
 public class PersonalTaskController {
 
 	private final PersonalTaskService personalTaskService;
 
 	/**
-	 * 간단한 할 일 추가
+	 * 할 일 추가
 	 */
-	@PostMapping("/simple")
-	public ResponseEntity<Long> addSimpleTask(
+	@PostMapping
+	public ResponseEntity<Long> addTask(
 			@RequestBody @Valid TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(personalTaskService.createSimpleTask(dto, userDetails.getMember().getId()));
-	}
-
-	/**
-	 * 상세한 할 일 추가
-	 */
-	@PostMapping("/detailed")
-	public ResponseEntity<Long> addDetailedTask(
-			@RequestBody @Valid TaskRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails userDetails
-	) {
-		return ResponseEntity.ok(personalTaskService.createDetailedTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(personalTaskService.createTask(dto, userDetails.getMember().getId()));
 	}
 
 	/**
@@ -67,7 +56,8 @@ public class PersonalTaskController {
 			@RequestParam(defaultValue = "5") int size
 	) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<TaskResponseDto> tasks = personalTaskService.getAllTasksByMemberId(userDetails.getMember().getId(), pageable);
+		Page<TaskResponseDto> tasks = personalTaskService.getAllTasksByMemberId(userDetails.getMember().getId(),
+				pageable);
 		return ResponseEntity.ok(tasks);
 	}
 

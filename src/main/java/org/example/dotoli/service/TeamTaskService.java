@@ -36,11 +36,11 @@ public class TeamTaskService implements TaskService {
 	private final TeamMemberRepository teamMemberRepository;
 
 	/**
-	 * 간단한 할 일 추가
+	 * 할 일 추가
 	 */
 	@Override
 	@Transactional
-	public Long createSimpleTask(TaskRequestDto dto, Long memberId) {
+	public Long createTask(TaskRequestDto dto, Long memberId) {
 		Long teamId = dto.getTeamId();
 
 		validateMemberTeamAccess(memberId, teamId);
@@ -48,25 +48,7 @@ public class TeamTaskService implements TaskService {
 		Member member = memberRepository.getReferenceById(memberId);
 		Team team = teamRepository.getReferenceById(teamId);
 
-		Task task = Task.createSimpleTeamTask(dto.getContent(), member, team);
-
-		return taskRepository.save(task).getId();
-	}
-
-	/**
-	 * 상세한 할 일 추가
-	 */
-	@Override
-	@Transactional
-	public Long createDetailedTask(TaskRequestDto dto, Long memberId) {
-		Long teamId = dto.getTeamId();
-
-		validateMemberTeamAccess(memberId, teamId);
-
-		Member member = memberRepository.getReferenceById(memberId);
-		Team team = teamRepository.getReferenceById(teamId);
-
-		Task task = Task.createDetailedTeamTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag(), team);
+		Task task = Task.createTeamTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag(), team);
 
 		return taskRepository.save(task).getId();
 	}
