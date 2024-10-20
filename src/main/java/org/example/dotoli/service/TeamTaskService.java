@@ -66,7 +66,7 @@ public class TeamTaskService implements TaskService {
 		Member member = memberRepository.getReferenceById(memberId);
 		Team team = teamRepository.getReferenceById(teamId);
 
-		Task task = Task.createDetailedTeamTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag(), team);
+		Task task = Task.createTeamTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag(), team);
 
 		return taskRepository.save(task).getId();
 	}
