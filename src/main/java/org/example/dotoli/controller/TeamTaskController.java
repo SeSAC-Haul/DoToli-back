@@ -64,7 +64,7 @@ public class TeamTaskController {
 			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
+		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId(), teamId);
 
 		return ResponseEntity.ok().build();
 	}

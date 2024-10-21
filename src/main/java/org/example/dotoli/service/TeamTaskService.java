@@ -85,9 +85,7 @@ public class TeamTaskService {
 	 * 할 일 수정
 	 */
 	@Transactional
-	public void updateTask(Long targetId, TaskRequestDto dto, Long memberId) {
-		Long teamId = dto.getTeamId();
-
+	public void updateTask(Long targetId, TaskRequestDto dto, Long memberId, Long teamId) {
 		validateMemberTeamAccess(memberId, teamId);
 
 		Task task = taskRepository.findById(targetId)
