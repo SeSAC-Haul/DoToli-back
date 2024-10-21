@@ -93,7 +93,7 @@ public class TeamTaskController {
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		teamTaskService.deleteTask(targetId, userDetails.getMember().getId());
+		teamTaskService.deleteTask(targetId, userDetails.getMember().getId(), teamId);
 
 		return ResponseEntity.ok().build();
 	}

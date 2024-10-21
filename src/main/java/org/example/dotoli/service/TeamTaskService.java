@@ -100,12 +100,11 @@ public class TeamTaskService {
 	 * 할 일 삭제
 	 */
 	@Transactional
-	public void deleteTask(Long targetId, Long memberId) {
+	public void deleteTask(Long targetId, Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
 		Task task = taskRepository.findById(targetId)
 				.orElseThrow(TaskNotFoundException::new);
-		Long teamId = task.getTeam().getId();
-
-		validateMemberTeamAccess(memberId, teamId);
 
 		taskRepository.delete(task);
 	}
