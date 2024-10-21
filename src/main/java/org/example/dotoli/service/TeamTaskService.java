@@ -10,6 +10,7 @@ import org.example.dotoli.domain.Team;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
+import org.example.dotoli.mapper.TaskMapper;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
 import org.example.dotoli.repository.TeamMemberRepository;
@@ -57,7 +58,7 @@ public class TeamTaskService {
 		validateMemberTeamAccess(memberId, teamId);
 
 		return taskRepository.findTeamTasks(teamId).stream()
-				.map(this::toTaskResponseDto)
+				.map(TaskMapper::toTaskResponseDto)
 				.toList();
 	}
 
@@ -70,7 +71,7 @@ public class TeamTaskService {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
 
-		return toTaskResponseDto(task);
+		return TaskMapper.toTaskResponseDto(task);
 	}
 
 	/**
@@ -118,17 +119,6 @@ public class TeamTaskService {
 		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
 			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
 		}
-	}
-
-	private TaskResponseDto toTaskResponseDto(Task task) {
-		return new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		);
 	}
 
 }

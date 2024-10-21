@@ -9,6 +9,7 @@ import org.example.dotoli.domain.Task;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
+import org.example.dotoli.mapper.TaskMapper;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
 import org.example.dotoli.repository.TaskRepositoryCustom;
@@ -48,31 +49,17 @@ public class PersonalTaskService {
 	 */
 	public Page<TaskResponseDto> getAllTasksByMemberId(Long memberId, Pageable pageable) {
 		Page<Task> tasks = taskRepository.findTasksByMemberId(memberId, pageable);
-		return tasks.map(task -> new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		));
+		return tasks.map(TaskMapper::toTaskResponseDto);
 	}
 
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
 	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
-		// FIXME 검증 로직 추가 필요 
+		// FIXME 검증 로직 추가 필요
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(() -> new IllegalArgumentException("Task not found"));
-		return new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		);
+		return TaskMapper.toTaskResponseDto(task);
 	}
 
 	/**
@@ -108,18 +95,6 @@ public class PersonalTaskService {
 	}
 
 	/**
-	 * 특정 할 일 조회 및 소유권 확인
-	 */
-	private Task findTaskAndValidateOwnership(Long taskId, Long memberId) {
-		Task task = taskRepository.findById(taskId)
-				.orElseThrow(TaskNotFoundException::new);
-
-		validateTaskOwnership(task.getMember().getId(), memberId);
-
-		return task;
-	}
-
-	/**
 	 * 조건 별로 선택된 정렬 조회
 	 */
 	public Page<TaskResponseDto> filterTasks(
@@ -130,14 +105,19 @@ public class PersonalTaskService {
 		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
 				memberId, pageable, teamId, startDate,
 				endDate, deadline, flag, createdAt, done);
-		return tasks.map(task -> new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		));
+		return tasks.map(TaskMapper::toTaskResponseDto);
+	}
+
+	/**
+	 * 특정 할 일 조회 및 소유권 확인
+	 */
+	private Task findTaskAndValidateOwnership(Long taskId, Long memberId) {
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(TaskNotFoundException::new);
+
+		validateTaskOwnership(task.getMember().getId(), memberId);
+
+		return task;
 	}
 
 	/**
