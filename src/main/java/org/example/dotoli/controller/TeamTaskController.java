@@ -70,7 +70,7 @@ public class TeamTaskController {
 	}
 
 	/**
-	 * 팀 할 일 완료 상태로 변경
+	 * 팀 할 일 완료 상태 변경
 	 */
 	@PutMapping("/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
@@ -79,7 +79,7 @@ public class TeamTaskController {
 			@RequestBody @Valid ToggleRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		teamTaskService.toggleDone(targetId, dto, userDetails.getMember().getId());
+		teamTaskService.toggleDone(targetId, dto, userDetails.getMember().getId(), teamId);
 
 		return ResponseEntity.ok().build();
 	}

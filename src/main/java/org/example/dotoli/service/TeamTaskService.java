@@ -113,12 +113,11 @@ public class TeamTaskService {
 	 * 할 일 완료 상태 변경
 	 */
 	@Transactional
-	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId) {
+	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
 		Task task = taskRepository.findById(targetId)
 				.orElseThrow(TaskNotFoundException::new);
-
-		Long teamId = task.getTeam().getId();
-		validateMemberTeamAccess(memberId, teamId);
 
 		task.updateDone(dto.isDone());
 	}
