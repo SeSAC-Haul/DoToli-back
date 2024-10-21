@@ -65,11 +65,11 @@ public class TeamTaskService {
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
-	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
+	public TaskResponseDto getTaskById(Long taskId, Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
-
-		validateMemberTeamAccess(memberId, task.getTeam().getId());
 
 		return new TaskResponseDto(
 				task.getId(),
