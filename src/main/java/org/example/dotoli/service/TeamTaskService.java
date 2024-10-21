@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TeamTaskService implements TaskService {
+public class TeamTaskService {
 
 	private final TaskRepository taskRepository;
 
@@ -38,7 +38,6 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 추가
 	 */
-	@Override
 	@Transactional
 	public Long createTask(TaskRequestDto dto, Long memberId) {
 		Long teamId = dto.getTeamId();
@@ -68,7 +67,6 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
-	@Override
 	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
@@ -88,7 +86,6 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 수정
 	 */
-	@Override
 	@Transactional
 	public void updateTask(Long targetId, TaskRequestDto dto, Long memberId) {
 		Long teamId = dto.getTeamId();
@@ -106,7 +103,6 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 삭제
 	 */
-	@Override
 	@Transactional
 	public void deleteTask(Long targetId, Long memberId) {
 		Task task = taskRepository.findById(targetId)
@@ -121,7 +117,6 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 완료 상태 변경
 	 */
-	@Override
 	@Transactional
 	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId) {
 		Task task = taskRepository.findById(targetId)
