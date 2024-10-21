@@ -36,6 +36,7 @@ public class TeamTaskController {
 	 */
 	@PostMapping
 	public ResponseEntity<Long> addTask(
+			@PathVariable Long teamId,
 			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
@@ -47,8 +48,8 @@ public class TeamTaskController {
 	 */
 	@GetMapping
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long teamId
+			@PathVariable Long teamId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		return ResponseEntity.ok(teamTaskService.getAllTasksByTeamId(userDetails.getMember().getId(), teamId));
 	}
@@ -58,6 +59,7 @@ public class TeamTaskController {
 	 */
 	@PutMapping("/{targetId}")
 	public ResponseEntity<Void> updateTask(
+			@PathVariable Long teamId,
 			@PathVariable Long targetId,
 			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
@@ -72,6 +74,7 @@ public class TeamTaskController {
 	 */
 	@PutMapping("/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
+			@PathVariable Long teamId,
 			@PathVariable Long targetId,
 			@RequestBody @Valid ToggleRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
@@ -86,6 +89,7 @@ public class TeamTaskController {
 	 */
 	@DeleteMapping("/{targetId}")
 	public ResponseEntity<Void> deleteTask(
+			@PathVariable Long teamId,
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
