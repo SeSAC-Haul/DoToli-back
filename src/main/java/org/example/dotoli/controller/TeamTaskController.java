@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/teams")
+@RequestMapping("/api/teams/{teamId}/tasks")
 public class TeamTaskController {
 
 	private final TeamTaskService teamTaskService;
@@ -36,7 +36,7 @@ public class TeamTaskController {
 	/**
 	 * 할 일 추가
 	 */
-	@PostMapping("/tasks")
+	@PostMapping
 	public ResponseEntity<Long> addTask(
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
@@ -47,7 +47,7 @@ public class TeamTaskController {
 	/**
 	 * 특정 팀의 모든 할 일 목록 조회
 	 */
-	@GetMapping("/{teamId}/tasks")
+	@GetMapping
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@PathVariable Long teamId
@@ -58,7 +58,7 @@ public class TeamTaskController {
 	/**
 	 * 팀 할 일 수정
 	 */
-	@PutMapping("/tasks/{targetId}")
+	@PutMapping("/{targetId}")
 	public ResponseEntity<Void> updateTask(
 			@PathVariable Long targetId,
 			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
@@ -72,7 +72,7 @@ public class TeamTaskController {
 	/**
 	 * 팀 할 일 완료 상태로 변경
 	 */
-	@PutMapping("/tasks/{targetId}/toggle")
+	@PutMapping("/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
 			@PathVariable Long targetId,
 			@RequestBody @Valid ToggleRequestDto dto,
@@ -86,7 +86,7 @@ public class TeamTaskController {
 	/**
 	 * 팀 할 일 삭제
 	 */
-	@DeleteMapping("/tasks/{targetId}")
+	@DeleteMapping("/{targetId}")
 	public ResponseEntity<Void> deleteTask(
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
