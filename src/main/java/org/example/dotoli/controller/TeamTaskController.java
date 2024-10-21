@@ -40,7 +40,7 @@ public class TeamTaskController {
 			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId(), teamId));
 	}
 
 	/**

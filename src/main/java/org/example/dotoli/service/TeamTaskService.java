@@ -39,9 +39,7 @@ public class TeamTaskService {
 	 * 할 일 추가
 	 */
 	@Transactional
-	public Long createTask(TaskRequestDto dto, Long memberId) {
-		Long teamId = dto.getTeamId();
-
+	public Long createTask(TaskRequestDto dto, Long memberId, Long teamId) {
 		validateMemberTeamAccess(memberId, teamId);
 
 		Member member = memberRepository.getReferenceById(memberId);
