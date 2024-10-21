@@ -57,8 +57,7 @@ public class TeamTaskService {
 		validateMemberTeamAccess(memberId, teamId);
 
 		return taskRepository.findTeamTasks(teamId).stream()
-				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
-						task.isFlag(), task.getCreatedAt()))
+				.map(this::toTaskResponseDto)
 				.toList();
 	}
 
@@ -71,14 +70,7 @@ public class TeamTaskService {
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
 
-		return new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		);
+		return toTaskResponseDto(task);
 	}
 
 	/**
@@ -126,6 +118,17 @@ public class TeamTaskService {
 		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
 			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
 		}
+	}
+
+	private TaskResponseDto toTaskResponseDto(Task task) {
+		return new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		);
 	}
 
 }
