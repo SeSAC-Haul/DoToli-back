@@ -4,13 +4,11 @@ import java.util.List;
 
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
-import org.example.dotoli.dto.task.TeamTaskValidation;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.TeamTaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,7 +36,7 @@ public class TeamTaskController {
 	 */
 	@PostMapping
 	public ResponseEntity<Long> addTask(
-			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
+			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId()));
@@ -61,7 +59,7 @@ public class TeamTaskController {
 	@PutMapping("/{targetId}")
 	public ResponseEntity<Void> updateTask(
 			@PathVariable Long targetId,
-			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
+			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
