@@ -1,6 +1,7 @@
 package org.example.dotoli.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.example.dotoli.config.error.exception.DuplicateEmailException;
@@ -48,10 +49,9 @@ public class AuthenticationService {
 	@Transactional
 	public Long saveMember(SignUpRequestDto dto) {
 		checkDuplicateEmail(dto.getEmail());
-		EmailToken emailToken = (EmailToken)emailTokenRepository.findByEmail(dto.getEmail())
-				.orElseThrow(() -> new RuntimeException("Email not verified"));
 
-		if (!emailToken.isEmailVerified()) {
+		List<EmailToken> emailTokens = emailTokenRepository.findAllByEmail(dto.getEmail());
+		if (emailTokens.stream().noneMatch(EmailToken::isEmailVerified)) {
 			throw new RuntimeException("Email not verified");
 		}
 
@@ -59,7 +59,7 @@ public class AuthenticationService {
 				dto.getEmail(), passwordEncoder.encode(dto.getPassword()), dto.getNickname()
 		);
 
-		emailTokenRepository.delete(emailToken);
+		emailTokenRepository.deleteByEmail(dto.getEmail());
 
 		return memberRepository.save(member).getId();
 	}
