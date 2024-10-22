@@ -1,6 +1,7 @@
 package org.example.dotoli.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
@@ -122,7 +123,7 @@ public class PersonalTaskController {
 			@RequestParam(required = false) Long teamId,
 			@RequestParam(required = false) LocalDate startDate,
 			@RequestParam(required = false) LocalDate endDate,
-			@RequestParam(required = false) LocalDate deadline,
+			@RequestParam(required = false) LocalDateTime deadline,
 			@RequestParam(required = false) Boolean flag,
 			@RequestParam(required = false) LocalDate createdAt,
 			@RequestParam(required = false) Boolean done,

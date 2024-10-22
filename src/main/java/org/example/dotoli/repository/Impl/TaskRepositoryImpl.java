@@ -1,6 +1,7 @@
 package org.example.dotoli.repository.Impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.example.dotoli.domain.QTask;
@@ -33,7 +34,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom {
 	@Override
 	public Page<Task> TaskFilter(
 			Long memberId, Pageable pageable, Long teamId, LocalDate startDate,
-			LocalDate endDate, LocalDate deadline,
+			LocalDate endDate, LocalDateTime deadline,
 			Boolean flag, LocalDate createdAt, Boolean done) {
 
 		QTask task = QTask.task;
