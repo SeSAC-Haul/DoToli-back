@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -22,8 +21,5 @@ public class TaskRequestDto {
 	private LocalDateTime deadline;
 
 	private boolean flag;
-
-	@NotNull(message = "팀 ID는 필수 입력값입니다.", groups = TeamTaskValidation.class)
-	private Long teamId;
 
 }
