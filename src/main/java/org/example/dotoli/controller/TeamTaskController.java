@@ -4,13 +4,11 @@ import java.util.List;
 
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
-import org.example.dotoli.dto.task.TeamTaskValidation;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.TeamTaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

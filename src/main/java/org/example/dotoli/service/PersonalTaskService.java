@@ -9,6 +9,7 @@ import org.example.dotoli.domain.Task;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
+import org.example.dotoli.mapper.TaskMapper;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
 import org.example.dotoli.repository.TaskRepositoryCustom;
@@ -36,7 +37,6 @@ public class PersonalTaskService {
 	/**
 	 * 할 일 추가
 	 */
-	@Override
 	@Transactional
 	public Long createTask(TaskRequestDto dto, Long memberId) {
 		Member member = memberRepository.getReferenceById(memberId);
@@ -55,7 +55,6 @@ public class PersonalTaskService {
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
-	@Override
 	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
 		// FIXME 검증 로직 추가 필요
 		Task task = taskRepository.findById(taskId)
