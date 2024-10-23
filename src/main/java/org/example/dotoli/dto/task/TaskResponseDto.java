@@ -23,6 +23,8 @@ public class TaskResponseDto {
 
 	private boolean flag;
 
+	private String keyword;
+
 	public TaskResponseDto(Long id, String content, boolean done, LocalDate deadline,
 			boolean flag, LocalDateTime createdAt) {
 		this.id = id;
