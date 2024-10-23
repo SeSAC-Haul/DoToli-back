@@ -18,6 +18,7 @@ public interface TaskRepositoryCustom {
 			LocalDate deadline,
 			Boolean flag,
 			LocalDate createdAt,
-			Boolean done);
+			Boolean done,
+			String keyword);
 
 }
