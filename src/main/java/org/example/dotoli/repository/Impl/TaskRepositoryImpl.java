@@ -34,7 +34,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom {
 	public Page<Task> TaskFilter(
 			Long memberId, Pageable pageable, Long teamId, LocalDate startDate,
 			LocalDate endDate, LocalDate deadline,
-			Boolean flag, LocalDate createdAt, Boolean done) {
+			Boolean flag, LocalDate createdAt, Boolean done, String keyword) {
 
 		QTask task = QTask.task;
 
@@ -84,11 +84,16 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom {
 			builder.and(task.done.eq(done));
 		}
 
+		// 검색어 조건 추가 (2글자 이상)
+		if (keyword != null && keyword.length() >= 2) {
+			builder.and(task.content.containsIgnoreCase(keyword)); // 검색어 포함 여부 확인
+		}
+
 		// 페이징된 데이터 조회
 		List<Task> tasks = queryFactory
 				.selectFrom(task)
 				.where(builder)
-				.orderBy(task.deadline.asc())
+				.orderBy(deadline != null ? task.deadline.desc() : task.createdAt.desc())
 				.offset(fixedPageable.getOffset())
 				.limit(fixedPageable.getPageSize())
 				.fetch();
