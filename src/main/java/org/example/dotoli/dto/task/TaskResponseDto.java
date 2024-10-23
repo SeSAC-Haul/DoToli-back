@@ -18,7 +18,7 @@ public class TaskResponseDto {
 
 	private LocalDateTime createdAt;
 
-	private LocalDateTime deadline; // LocalDatetime -> LocalDateTime 수정
+	private LocalDateTime deadline;
 
 	private boolean flag;
 
