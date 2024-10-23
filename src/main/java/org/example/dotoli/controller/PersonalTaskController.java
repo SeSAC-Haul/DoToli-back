@@ -117,7 +117,7 @@ public class PersonalTaskController {
 	 * 조건 별로 선택된 정렬 조회
 	 */
 	@GetMapping("/filter")
-	public ResponseEntity<Page<TaskResponseDto>> filterTasks(
+	public ResponseEntity<Page<TaskResponseDto>> filterTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@RequestParam(required = false) Long teamId,
 			@RequestParam(required = false) LocalDate startDate,
@@ -128,14 +128,34 @@ public class PersonalTaskController {
 			@RequestParam(required = false) Boolean done,
 			@RequestParam(defaultValue = "0") int page
 	) {
+
 		int size = 5;
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<TaskResponseDto> filteredTasks = personalTaskService.filterTasks(
+		Page<TaskResponseDto> filteredTasks = personalTaskService.filterTask(
 				userDetails.getMember().getId(), pageable, teamId,
 				startDate, endDate, deadline, flag, createdAt, done);
 
 		return ResponseEntity.ok(filteredTasks);
+	}
+
+	/**
+	 *  개인 할 일 검색
+	 */
+	@GetMapping("/search")
+	public ResponseEntity<Page<TaskResponseDto>> searchTask(
+			@AuthenticationPrincipal CustomUserDetails userDetails,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(defaultValue = "0") int page
+	) {
+
+		int size = 5;
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<TaskResponseDto> searchedTasks = personalTaskService.searchTask(
+				userDetails.getMember().getId(), pageable, keyword);
+
+		return ResponseEntity.ok(searchedTasks);
 	}
 
 }
