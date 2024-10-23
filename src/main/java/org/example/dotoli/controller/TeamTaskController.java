@@ -34,7 +34,7 @@ public class TeamTaskController {
 	/**
 	 * 할 일 추가
 	 */
-	@PostMapping("/tasks")
+	@PostMapping
 	public ResponseEntity<Long> addTask(
 			@PathVariable Long teamId,
 			@RequestBody TaskRequestDto dto,
