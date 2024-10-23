@@ -1,7 +1,5 @@
 package org.example.dotoli.repository;
 
-import java.util.List;
-
 import org.example.dotoli.domain.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +18,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	@Query("SELECT t " +
 			"FROM Task t " +
 			"WHERE t.member.id = :memberId " +
+			"AND t.team IS NULL " +
 			"ORDER BY t.done ASC, t.createdAt DESC")
-	Page<Task> findTasksByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+	Page<Task> findPersonalTasksByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
 	/**
 	 * 사용자의 전체 할 일 개수 조회
@@ -46,6 +45,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			+ "FROM Task t "
 			+ "WHERE t.team.id = :teamId "
 			+ "ORDER BY t.done ASC, t.createdAt DESC")
-	List<Task> findTeamTasks(@Param("teamId") Long teamId);
+	Page<Task> findTeamTasks(@Param("teamId") Long teamId, Pageable pageable);
 
 }
