@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PersonalTaskService implements TaskService {
+public class PersonalTaskService {
 
 	private final TaskRepository taskRepository;
 
@@ -49,14 +49,7 @@ public class PersonalTaskService implements TaskService {
 	 */
 	public Page<TaskResponseDto> getAllTasksByMemberId(Long memberId, Pageable pageable) {
 		Page<Task> tasks = taskRepository.findTasksByMemberId(memberId, pageable);
-		return tasks.map(task -> new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		));
+		return tasks.map(TaskMapper::toTaskResponseDto);
 	}
 
 	/**
@@ -64,23 +57,15 @@ public class PersonalTaskService implements TaskService {
 	 */
 	@Override
 	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
-		// FIXME 검증 로직 추가 필요 
+		// FIXME 검증 로직 추가 필요
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(() -> new IllegalArgumentException("Task not found"));
-		return new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		);
+		return TaskMapper.toTaskResponseDto(task);
 	}
 
 	/**
 	 * 할 일 수정
 	 */
-	@Override
 	@Transactional
 	public void updateTask(Long taskId, TaskRequestDto dto, Long memberId) {
 		Task task = findTaskAndValidateOwnership(taskId, memberId);
@@ -93,7 +78,6 @@ public class PersonalTaskService implements TaskService {
 	/**
 	 * 할 일 삭제
 	 */
-	@Override
 	@Transactional
 	public void deleteTask(Long targetId, Long memberId) {
 		Task task = findTaskAndValidateOwnership(targetId, memberId);
@@ -104,24 +88,11 @@ public class PersonalTaskService implements TaskService {
 	/**
 	 * 할 일 완료 상태 변경
 	 */
-	@Override
 	@Transactional
 	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId) {
 		Task task = findTaskAndValidateOwnership(targetId, memberId);
 
 		task.updateDone(dto.isDone());
-	}
-
-	/**
-	 * 특정 할 일 조회 및 소유권 확인
-	 */
-	private Task findTaskAndValidateOwnership(Long taskId, Long memberId) {
-		Task task = taskRepository.findById(taskId)
-				.orElseThrow(TaskNotFoundException::new);
-
-		validateTaskOwnership(task.getMember().getId(), memberId);
-
-		return task;
 	}
 
 	/**
@@ -135,14 +106,19 @@ public class PersonalTaskService implements TaskService {
 		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
 				memberId, pageable, teamId, startDate,
 				endDate, deadline, flag, createdAt, done);
-		return tasks.map(task -> new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		));
+		return tasks.map(TaskMapper::toTaskResponseDto);
+	}
+
+	/**
+	 * 특정 할 일 조회 및 소유권 확인
+	 */
+	private Task findTaskAndValidateOwnership(Long taskId, Long memberId) {
+		Task task = taskRepository.findById(taskId)
+				.orElseThrow(TaskNotFoundException::new);
+
+		validateTaskOwnership(task.getMember().getId(), memberId);
+
+		return task;
 	}
 
 	/**

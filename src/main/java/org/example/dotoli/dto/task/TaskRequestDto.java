@@ -3,7 +3,6 @@ package org.example.dotoli.dto.task;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -18,8 +17,5 @@ public class TaskRequestDto {
 	private LocalDate deadline;
 
 	private boolean flag;
-
-	@NotNull(message = "팀 ID는 필수 입력값입니다.", groups = TeamTaskValidation.class)
-	private Long teamId;
 
 }

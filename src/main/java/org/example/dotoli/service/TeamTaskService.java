@@ -10,6 +10,7 @@ import org.example.dotoli.domain.Team;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
+import org.example.dotoli.mapper.TaskMapper;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
 import org.example.dotoli.repository.TeamMemberRepository;
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class TeamTaskService implements TaskService {
+public class TeamTaskService {
 
 	private final TaskRepository taskRepository;
 
@@ -38,11 +39,8 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 추가
 	 */
-	@Override
 	@Transactional
-	public Long createTask(TaskRequestDto dto, Long memberId) {
-		Long teamId = dto.getTeamId();
-
+	public Long createTask(TaskRequestDto dto, Long memberId, Long teamId) {
 		validateMemberTeamAccess(memberId, teamId);
 
 		Member member = memberRepository.getReferenceById(memberId);
@@ -60,39 +58,27 @@ public class TeamTaskService implements TaskService {
 		validateMemberTeamAccess(memberId, teamId);
 
 		return taskRepository.findTeamTasks(teamId).stream()
-				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
-						task.isFlag(), task.getCreatedAt()))
+				.map(TaskMapper::toTaskResponseDto)
 				.toList();
 	}
 
 	/**
 	 * 할 일 상세 조회 (개별 할 일 조회)
 	 */
-	@Override
-	public TaskResponseDto getTaskById(Long taskId, Long memberId) {
+	public TaskResponseDto getTaskById(Long taskId, Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
 		Task task = taskRepository.findById(taskId)
 				.orElseThrow(TaskNotFoundException::new);
 
-		validateMemberTeamAccess(memberId, task.getTeam().getId());
-
-		return new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		);
+		return TaskMapper.toTaskResponseDto(task);
 	}
 
 	/**
 	 * 할 일 수정
 	 */
-	@Override
 	@Transactional
-	public void updateTask(Long targetId, TaskRequestDto dto, Long memberId) {
-		Long teamId = dto.getTeamId();
-
+	public void updateTask(Long targetId, TaskRequestDto dto, Long memberId, Long teamId) {
 		validateMemberTeamAccess(memberId, teamId);
 
 		Task task = taskRepository.findById(targetId)
@@ -106,14 +92,12 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 삭제
 	 */
-	@Override
 	@Transactional
-	public void deleteTask(Long targetId, Long memberId) {
+	public void deleteTask(Long targetId, Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
 		Task task = taskRepository.findById(targetId)
 				.orElseThrow(TaskNotFoundException::new);
-		Long teamId = task.getTeam().getId();
-
-		validateMemberTeamAccess(memberId, teamId);
 
 		taskRepository.delete(task);
 	}
@@ -121,14 +105,12 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 완료 상태 변경
 	 */
-	@Override
 	@Transactional
-	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId) {
+	public void toggleDone(Long targetId, ToggleRequestDto dto, Long memberId, Long teamId) {
+		validateMemberTeamAccess(memberId, teamId);
+
 		Task task = taskRepository.findById(targetId)
 				.orElseThrow(TaskNotFoundException::new);
-
-		Long teamId = task.getTeam().getId();
-		validateMemberTeamAccess(memberId, teamId);
 
 		task.updateDone(dto.isDone());
 	}

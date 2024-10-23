@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/teams")
+@RequestMapping("/api/teams/{teamId}/tasks")
 public class TeamTaskController {
 
 	private final TeamTaskService teamTaskService;
@@ -38,19 +38,20 @@ public class TeamTaskController {
 	 */
 	@PostMapping("/tasks")
 	public ResponseEntity<Long> addTask(
-			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
+			@PathVariable Long teamId,
+			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId()));
+		return ResponseEntity.ok(teamTaskService.createTask(dto, userDetails.getMember().getId(), teamId));
 	}
 
 	/**
 	 * 특정 팀의 모든 할 일 목록 조회
 	 */
-	@GetMapping("/{teamId}/tasks")
+	@GetMapping
 	public ResponseEntity<List<TaskResponseDto>> getAllTask(
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@PathVariable Long teamId
+			@PathVariable Long teamId,
+			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		return ResponseEntity.ok(teamTaskService.getAllTasksByTeamId(userDetails.getMember().getId(), teamId));
 	}
@@ -58,27 +59,29 @@ public class TeamTaskController {
 	/**
 	 * 팀 할 일 수정
 	 */
-	@PutMapping("/tasks/{targetId}")
+	@PutMapping("/{targetId}")
 	public ResponseEntity<Void> updateTask(
+			@PathVariable Long teamId,
 			@PathVariable Long targetId,
-			@RequestBody @Validated(TeamTaskValidation.class) TaskRequestDto dto,
+			@RequestBody TaskRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId());
+		teamTaskService.updateTask(targetId, dto, userDetails.getMember().getId(), teamId);
 
 		return ResponseEntity.ok().build();
 	}
 
 	/**
-	 * 팀 할 일 완료 상태로 변경
+	 * 팀 할 일 완료 상태 변경
 	 */
-	@PutMapping("/tasks/{targetId}/toggle")
+	@PutMapping("/{targetId}/toggle")
 	public ResponseEntity<Void> toggleTaskDone(
+			@PathVariable Long teamId,
 			@PathVariable Long targetId,
 			@RequestBody @Valid ToggleRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		teamTaskService.toggleDone(targetId, dto, userDetails.getMember().getId());
+		teamTaskService.toggleDone(targetId, dto, userDetails.getMember().getId(), teamId);
 
 		return ResponseEntity.ok().build();
 	}
@@ -86,12 +89,13 @@ public class TeamTaskController {
 	/**
 	 * 팀 할 일 삭제
 	 */
-	@DeleteMapping("/tasks/{targetId}")
+	@DeleteMapping("/{targetId}")
 	public ResponseEntity<Void> deleteTask(
+			@PathVariable Long teamId,
 			@PathVariable Long targetId,
 			@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		teamTaskService.deleteTask(targetId, userDetails.getMember().getId());
+		teamTaskService.deleteTask(targetId, userDetails.getMember().getId(), teamId);
 
 		return ResponseEntity.ok().build();
 	}
