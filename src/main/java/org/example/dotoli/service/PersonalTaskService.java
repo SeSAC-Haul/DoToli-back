@@ -48,7 +48,7 @@ public class PersonalTaskService implements TaskService {
 	 * 사용자의 모든 할 일 목록 조회
 	 */
 	public Page<TaskResponseDto> getAllTasksByMemberId(Long memberId, Pageable pageable) {
-		Page<Task> tasks = taskRepository.findTasksByMemberId(memberId, pageable);
+		Page<Task> tasks = taskRepository.findPersonalTasksByMemberId(memberId, pageable);
 		return tasks.map(task -> new TaskResponseDto(
 				task.getId(),
 				task.getContent(),
@@ -125,16 +125,25 @@ public class PersonalTaskService implements TaskService {
 	}
 
 	/**
+	 * 소유권 검증
+	 */
+	private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
+		if (!taskOwnerId.equals(currentMemberId)) {
+			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
+		}
+	}
+
+	/**
 	 * 조건 별로 선택된 정렬 조회
 	 */
-	public Page<TaskResponseDto> filterTasks(
+	public Page<TaskResponseDto> filterTask(
 			Long memberId, Pageable pageable, Long teamId,
 			LocalDate startDate, LocalDate endDate,
 			LocalDate deadline, Boolean flag,
 			LocalDate createdAt, Boolean done) {
 		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
 				memberId, pageable, teamId, startDate,
-				endDate, deadline, flag, createdAt, done);
+				endDate, deadline, flag, createdAt, done, null);
 		return tasks.map(task -> new TaskResponseDto(
 				task.getId(),
 				task.getContent(),
@@ -146,12 +155,21 @@ public class PersonalTaskService implements TaskService {
 	}
 
 	/**
-	 * 소유권 검증
+	 * 할 일 검색
 	 */
-	private void validateTaskOwnership(Long taskOwnerId, Long currentMemberId) {
-		if (!taskOwnerId.equals(currentMemberId)) {
-			throw new ForbiddenException("해당 항목을 수정할 권한이 없습니다.");
-		}
+	public Page<TaskResponseDto> searchTask(Long memberId, Pageable pageable, String keyword) {
+		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
+				memberId, pageable, null, null, null, null,
+				null, null, null, keyword);
+
+		return tasks.map(task -> new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		));
 	}
 
 }
