@@ -1,6 +1,6 @@
 package org.example.dotoli.service;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
@@ -12,8 +12,11 @@ import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
+import org.example.dotoli.repository.TaskRepositoryCustom;
 import org.example.dotoli.repository.TeamMemberRepository;
 import org.example.dotoli.repository.TeamRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +37,8 @@ public class TeamTaskService implements TaskService {
 	private final TeamRepository teamRepository;
 
 	private final TeamMemberRepository teamMemberRepository;
+
+	private final TaskRepositoryCustom taskRepositoryCustom;
 
 	/**
 	 * 할 일 추가
@@ -56,13 +61,21 @@ public class TeamTaskService implements TaskService {
 	/**
 	 * 할 일 목록 조회
 	 */
-	public List<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId) {
+	// public List<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId) {
+	// 	validateMemberTeamAccess(memberId, teamId);
+	//
+	// 	return taskRepository.findTeamTasks(teamId).stream()
+	// 			.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
+	// 					task.isFlag(), task.getCreatedAt()))
+	// 			.toList();
+	// }
+	public Page<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId, Pageable pageable) {
 		validateMemberTeamAccess(memberId, teamId);
 
-		return taskRepository.findTeamTasks(teamId).stream()
-				.map(task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
-						task.isFlag(), task.getCreatedAt()))
-				.toList();
+		return taskRepository.findTeamTasks(teamId, pageable).map(
+				task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
+						task.isFlag(), task.getCreatedAt())
+		);
 	}
 
 	/**
@@ -137,6 +150,50 @@ public class TeamTaskService implements TaskService {
 		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
 			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
 		}
+	}
+
+	/**
+	 * 팀 할 일 조건 별로 선택된 정렬 조회
+	 */
+	public Page<TaskResponseDto> filterTask(Long memberId, Pageable pageable, Long teamId,
+			LocalDate startDate, LocalDate endDate, LocalDate deadline,
+			Boolean flag, LocalDate createdAt, Boolean done, String keyword) {
+		if (teamId != null) {
+			validateMemberTeamAccess(memberId, teamId);
+		}
+
+		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
+				memberId, pageable, teamId, startDate, endDate, deadline, flag, createdAt, done, keyword);
+
+		return tasks.map(task -> new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		));
+	}
+
+	/**
+	 *  팀 할 일 검색
+	 */
+	public Page<TaskResponseDto> searchTask(Long memberId, Long teamId, Pageable pageable, String keyword) {
+		if (teamId != null) {
+			validateMemberTeamAccess(memberId, teamId);
+		}
+
+		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
+				memberId, pageable, teamId, null, null, null, null, null, null, keyword);
+
+		return tasks.map(task -> new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		));
 	}
 
 }
