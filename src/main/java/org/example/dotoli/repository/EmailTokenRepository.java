@@ -15,7 +15,7 @@ public interface EmailTokenRepository extends JpaRepository<EmailToken, Long> {
 
 	List<EmailToken> findAllByEmail(String email);
 
-	Optional<Object> findByToken(String token);
+	Optional<EmailToken> findByToken(String token);
 
 	@Modifying
 	@Transactional

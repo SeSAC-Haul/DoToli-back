@@ -77,17 +77,6 @@ public class AuthenticationService {
 	}
 
 	/**
-	 * 이메일 중복 체크
-	 */
-	private void checkDuplicateEmail(String email) {
-		// TODO EXISTS 쿼리 사용 고려
-		memberRepository.findByEmail(email)
-				.ifPresent(m -> {
-					throw new DuplicateEmailException();
-				});
-	}
-
-	/**
 	 * 이메일 중복 체크 및 인증 이메일 전송
 	 */
 	@Transactional
@@ -121,7 +110,7 @@ public class AuthenticationService {
 	 */
 	@Transactional
 	public void verifyEmailToken(String token) {
-		EmailToken emailToken = (EmailToken)emailTokenRepository.findByToken(token)
+		EmailToken emailToken = emailTokenRepository.findByToken(token)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid token."));
 
 		if (emailToken.isExpired()) {
@@ -129,11 +118,20 @@ public class AuthenticationService {
 		}
 
 		String email = emailToken.getEmail();
-		if (memberRepository.findByEmail(email).isPresent()) {
-			throw new IllegalArgumentException("Email is already registered.");
-		}
+		checkDuplicateEmail(email);
 
 		emailToken.verifyEmail();
+	}
+
+	/**
+	 * 이메일 중복 체크
+	 */
+	private void checkDuplicateEmail(String email) {
+		// TODO EXISTS 쿼리 사용 고려
+		memberRepository.findByEmail(email)
+				.ifPresent(m -> {
+					throw new DuplicateEmailException();
+				});
 	}
 
 }
