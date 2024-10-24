@@ -1,6 +1,8 @@
 package org.example.dotoli.dto.task;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -14,7 +16,8 @@ public class TaskRequestDto {
 	@NotBlank(message = "내용은 필수 입력값입니다.")
 	private String content;
 
-	private LocalDate deadline;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	private LocalDateTime deadline;
 
 	private boolean flag;
 

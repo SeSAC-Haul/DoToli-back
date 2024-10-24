@@ -1,6 +1,7 @@
 package org.example.dotoli.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
@@ -100,7 +101,7 @@ public class PersonalTaskService {
 	public Page<TaskResponseDto> filterTasks(
 			Long memberId, Pageable pageable, Long teamId,
 			LocalDate startDate, LocalDate endDate,
-			LocalDate deadline, Boolean flag,
+			LocalDateTime deadline, Boolean flag,
 			LocalDate createdAt, Boolean done) {
 		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
 				memberId, pageable, teamId, startDate,
