@@ -17,7 +17,8 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 	/**
 	 * 초대 수신 목록
 	 */
-	@Query("SELECT new org.example.dotoli.dto.invitation.PendingInvitationDto(i.id, t.teamName, m.nickname, m.email) " +
+	@Query("SELECT new org.example.dotoli.dto.invitation.PendingInvitationDto " +
+			"(i.id, t.id, t.teamName, m.nickname, m.email) " +
 			"FROM Invitation i " +
 			"JOIN Team t ON i.team.id = t.id " +
 			"JOIN Member m ON i.inviter.id = m.id " +
