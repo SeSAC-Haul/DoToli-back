@@ -31,8 +31,7 @@ public class MyPageResponseDto {
 		this.totalTaskCount = totalTaskCount;
 		this.completedTaskCount = completedTaskCount;
 		this.achievementRate = achievementRate;
-		this.invitations = invitations != null ? invitations : new ArrayList<>(); // null 체크
-
+		this.invitations = invitations;
 	}
 
 	public void setMemberInfo(String email, String nickname) {
