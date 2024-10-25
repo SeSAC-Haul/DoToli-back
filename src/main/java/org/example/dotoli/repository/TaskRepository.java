@@ -47,4 +47,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 			+ "ORDER BY t.done ASC, t.createdAt DESC")
 	Page<Task> findTeamTasks(@Param("teamId") Long teamId, Pageable pageable);
 
+
+
 }

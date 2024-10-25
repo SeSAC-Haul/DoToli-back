@@ -1,6 +1,5 @@
 package org.example.dotoli.domain;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -34,7 +33,7 @@ public class Task {
 	private LocalDateTime createdAt;
 
 	// 마감일
-	private LocalDate deadline;
+	private LocalDateTime deadline;
 
 	// 중요도(플래그)
 	private boolean flag;
@@ -45,7 +44,7 @@ public class Task {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Team team;
 
-	private Task(String content, Member member, LocalDate deadline, boolean flag, Team team) {
+	private Task(String content, Member member, LocalDateTime deadline, boolean flag, Team team) {
 		this.content = content;
 		this.member = member;
 		this.deadline = deadline;
@@ -57,14 +56,14 @@ public class Task {
 	/**
 	 * 개인 할 일 생성 메서드
 	 */
-	public static Task createPersonalTask(String content, Member member, LocalDate deadline, boolean flag) {
+	public static Task createPersonalTask(String content, Member member, LocalDateTime deadline, boolean flag) {
 		return new Task(content, member, deadline, flag, null);
 	}
 
 	/**
 	 * 팀 할 일 생성 메서드
 	 */
-	public static Task createTeamTask(String content, Member member, LocalDate deadline, boolean flag, Team team) {
+	public static Task createTeamTask(String content, Member member, LocalDateTime deadline, boolean flag, Team team) {
 		return new Task(content, member, deadline, flag, team);
 	}
 
@@ -83,7 +82,7 @@ public class Task {
 	}
 
 	// 데드라인 적용 메소드
-	public void updateDeadline(LocalDate deadline) {
+	public void updateDeadline(LocalDateTime deadline) {
 		this.deadline = deadline;
 	}
 

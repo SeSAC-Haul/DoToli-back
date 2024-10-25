@@ -1,6 +1,7 @@
 package org.example.dotoli.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Task 항목 관련 엔드포인트를 처리하는 컨트롤러
@@ -31,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tasks") // TODO: URI 고민 필요, /api/personal/tasks
+@Slf4j
 public class PersonalTaskController {
 
 	private final PersonalTaskService personalTaskService;
@@ -122,12 +125,18 @@ public class PersonalTaskController {
 			@RequestParam(required = false) Long teamId,
 			@RequestParam(required = false) LocalDate startDate,
 			@RequestParam(required = false) LocalDate endDate,
-			@RequestParam(required = false) LocalDate deadline,
+			@RequestParam(required = false) String deadlineStr,
 			@RequestParam(required = false) Boolean flag,
 			@RequestParam(required = false) LocalDate createdAt,
 			@RequestParam(required = false) Boolean done,
 			@RequestParam(defaultValue = "0") int page
 	) {
+
+		LocalDateTime deadline = null;
+		if (deadlineStr != null) {
+			LocalDate deadlineDate = LocalDate.parse(deadlineStr);
+			deadline = deadlineDate.atStartOfDay();
+		}
 
 		int size = 5;
 		Pageable pageable = PageRequest.of(page, size);

@@ -1,6 +1,7 @@
 package org.example.dotoli.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.example.dotoli.domain.Task;
 import org.springframework.data.domain.Page;
@@ -11,11 +12,13 @@ import org.springframework.data.domain.Pageable;
  */
 public interface TaskRepositoryCustom {
 
-	Page<Task> TaskFilter(Long memberId, Pageable pageable,
+	Page<Task> TaskFilter(
+			Long memberId,
+			Pageable pageable,
 			Long teamId,
 			LocalDate startDate,
 			LocalDate endDate,
-			LocalDate deadline,
+			LocalDateTime deadline,
 			Boolean flag,
 			LocalDate createdAt,
 			Boolean done,
