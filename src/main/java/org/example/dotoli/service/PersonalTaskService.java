@@ -98,16 +98,16 @@ public class PersonalTaskService {
 	}
 
 	/**
-	 * 조건 별로 선택된 정렬 조회
+	 * 조건 별로 선택된 정렬 조회, 검색
 	 */
 	public Page<TaskResponseDto> filterTask(
 			Long memberId, Pageable pageable, Long teamId,
 			LocalDate startDate, LocalDate endDate,
 			LocalDateTime deadline, Boolean flag,
-			LocalDate createdAt, Boolean done) {
+			LocalDate createdAt, Boolean done, String keyword) {
 		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
 				memberId, pageable, teamId, startDate,
-				endDate, deadline, flag, createdAt, done, null);
+				endDate, deadline, flag, createdAt, done, keyword);
 
 		return tasks.map(TaskMapper::toTaskResponseDto);
 	}
@@ -122,24 +122,6 @@ public class PersonalTaskService {
 		validateTaskOwnership(task.getMember().getId(), memberId);
 
 		return task;
-	}
-
-	/**
-	 * 할 일 검색
-	 */
-	public Page<TaskResponseDto> searchTask(Long memberId, Pageable pageable, String keyword) {
-		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
-				memberId, pageable, null, null, null, null,
-				null, null, null, keyword);
-
-		return tasks.map(task -> new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		));
 	}
 
 	/**

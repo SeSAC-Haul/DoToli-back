@@ -63,9 +63,6 @@ public class TeamTaskService {
 	public Page<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId, Pageable pageable) {
 		validateMemberTeamAccess(memberId, teamId);
 
-		// return taskRepository.findTeamTasks(teamId, pageable).stream()
-		// 		.map(TaskMapper::toTaskResponseDto)
-		// 		.toList();
 		return taskRepository.findTeamTasks(teamId, pageable).map(
 				task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
 						task.isFlag(), task.getCreatedAt())
@@ -143,27 +140,6 @@ public class TeamTaskService {
 
 		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
 				memberId, pageable, teamId, startDate, endDate, deadline, flag, createdAt, done, keyword);
-
-		return tasks.map(task -> new TaskResponseDto(
-				task.getId(),
-				task.getContent(),
-				task.isDone(),
-				task.getDeadline(),
-				task.isFlag(),
-				task.getCreatedAt()
-		));
-	}
-
-	/**
-	 *  팀 할 일 검색
-	 */
-	public Page<TaskResponseDto> searchTask(Long memberId, Long teamId, Pageable pageable, String keyword) {
-		if (teamId != null) {
-			validateMemberTeamAccess(memberId, teamId);
-		}
-
-		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
-				memberId, pageable, teamId, null, null, null, null, null, null, keyword);
 
 		return tasks.map(task -> new TaskResponseDto(
 				task.getId(),

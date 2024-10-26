@@ -129,6 +129,7 @@ public class PersonalTaskController {
 			@RequestParam(required = false) Boolean flag,
 			@RequestParam(required = false) LocalDate createdAt,
 			@RequestParam(required = false) Boolean done,
+			@RequestParam(required = false) String keyword,
 			@RequestParam(defaultValue = "0") int page
 	) {
 
@@ -143,28 +144,9 @@ public class PersonalTaskController {
 
 		Page<TaskResponseDto> filteredTasks = personalTaskService.filterTask(
 				userDetails.getMember().getId(), pageable, teamId,
-				startDate, endDate, deadline, flag, createdAt, done);
+				startDate, endDate, deadline, flag, createdAt, done, keyword);
 
 		return ResponseEntity.ok(filteredTasks);
-	}
-
-	/**
-	 *  개인 할 일 검색
-	 */
-	@GetMapping("/search")
-	public ResponseEntity<Page<TaskResponseDto>> searchTask(
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@RequestParam(required = false) String keyword,
-			@RequestParam(defaultValue = "0") int page
-	) {
-
-		int size = 5;
-		Pageable pageable = PageRequest.of(page, size);
-
-		Page<TaskResponseDto> searchedTasks = personalTaskService.searchTask(
-				userDetails.getMember().getId(), pageable, keyword);
-
-		return ResponseEntity.ok(searchedTasks);
 	}
 
 }

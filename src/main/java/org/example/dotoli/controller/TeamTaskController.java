@@ -109,7 +109,7 @@ public class TeamTaskController {
 	}
 
 	/**
-	 * 팀 할 일 조건 별로 선택된 정렬 조회
+	 * 팀 할 일 조건 별로 선택된 정렬 조회, 검색
 	 */
 	@GetMapping("/filter")
 	public ResponseEntity<Page<TaskResponseDto>> filterTask(
@@ -136,26 +136,6 @@ public class TeamTaskController {
 		Page<TaskResponseDto> filteredTasks = teamTaskService.filterTask(
 				userDetails.getMember().getId(), pageable, teamId,
 				startDate, endDate, deadline, flag, createdAt, done, keyword);
-
-		return ResponseEntity.ok(filteredTasks);
-	}
-
-	/**
-	 *  팀 할 일 검색
-	 */
-	@GetMapping("/search")
-	public ResponseEntity<Page<TaskResponseDto>> searchTask(
-			@PathVariable Long teamId,
-			@AuthenticationPrincipal CustomUserDetails userDetails,
-			@RequestParam(required = false) String keyword,
-			@RequestParam(defaultValue = "0") int page
-	) {
-
-		int size = 5;
-		Pageable pageable = PageRequest.of(page, size);
-
-		Page<TaskResponseDto> filteredTasks = teamTaskService.searchTask(
-				userDetails.getMember().getId(), teamId, pageable, keyword);
 
 		return ResponseEntity.ok(filteredTasks);
 	}
