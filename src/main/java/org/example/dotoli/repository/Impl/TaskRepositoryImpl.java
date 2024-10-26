@@ -95,11 +95,12 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom {
 			builder.and(task.deadline.loe(standardDeadline));
 		}
 
-		// 페이징된 데이터 조회 (if문 밖으로 이동)
+		// 페이징된 데이터 조회
 		List<Task> tasks = queryFactory
 				.selectFrom(task)
 				.where(builder)
 				.orderBy(
+						task.done.asc(),
 						deadline != null
 								? Expressions.stringTemplate(
 								"ABS(TIMESTAMPDIFF(SECOND, {0}, {1}))",
