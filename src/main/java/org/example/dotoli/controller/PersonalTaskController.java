@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Task 항목 관련 엔드포인트를 처리하는 컨트롤러
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tasks") // TODO: URI 고민 필요, /api/personal/tasks
+@Slf4j
 public class PersonalTaskController {
 
 	private final PersonalTaskService personalTaskService;
@@ -118,23 +120,31 @@ public class PersonalTaskController {
 	 * 조건 별로 선택된 정렬 조회
 	 */
 	@GetMapping("/filter")
-	public ResponseEntity<Page<TaskResponseDto>> filterTasks(
+	public ResponseEntity<Page<TaskResponseDto>> filterTask(
 			@AuthenticationPrincipal CustomUserDetails userDetails,
 			@RequestParam(required = false) Long teamId,
 			@RequestParam(required = false) LocalDate startDate,
 			@RequestParam(required = false) LocalDate endDate,
-			@RequestParam(required = false) LocalDateTime deadline,
+			@RequestParam(required = false) String deadlineStr,
 			@RequestParam(required = false) Boolean flag,
 			@RequestParam(required = false) LocalDate createdAt,
 			@RequestParam(required = false) Boolean done,
+			@RequestParam(required = false) String keyword,
 			@RequestParam(defaultValue = "0") int page
 	) {
+
+		LocalDateTime deadline = null;
+		if (deadlineStr != null) {
+			LocalDate deadlineDate = LocalDate.parse(deadlineStr);
+			deadline = deadlineDate.atStartOfDay();
+		}
+
 		int size = 5;
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<TaskResponseDto> filteredTasks = personalTaskService.filterTasks(
+		Page<TaskResponseDto> filteredTasks = personalTaskService.filterTask(
 				userDetails.getMember().getId(), pageable, teamId,
-				startDate, endDate, deadline, flag, createdAt, done);
+				startDate, endDate, deadline, flag, createdAt, done, keyword);
 
 		return ResponseEntity.ok(filteredTasks);
 	}

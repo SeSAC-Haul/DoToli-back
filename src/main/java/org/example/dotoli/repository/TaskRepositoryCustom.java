@@ -12,13 +12,16 @@ import org.springframework.data.domain.Pageable;
  */
 public interface TaskRepositoryCustom {
 
-	Page<Task> TaskFilter(Long memberId, Pageable pageable,
+	Page<Task> TaskFilter(
+			Long memberId,
+			Pageable pageable,
 			Long teamId,
 			LocalDate startDate,
 			LocalDate endDate,
 			LocalDateTime deadline,
 			Boolean flag,
 			LocalDate createdAt,
-			Boolean done);
+			Boolean done,
+			String keyword);
 
 }

@@ -1,6 +1,7 @@
 package org.example.dotoli.service;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
@@ -13,8 +14,11 @@ import org.example.dotoli.dto.task.ToggleRequestDto;
 import org.example.dotoli.mapper.TaskMapper;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
+import org.example.dotoli.repository.TaskRepositoryCustom;
 import org.example.dotoli.repository.TeamMemberRepository;
 import org.example.dotoli.repository.TeamRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +40,8 @@ public class TeamTaskService {
 
 	private final TeamMemberRepository teamMemberRepository;
 
+	private final TaskRepositoryCustom taskRepositoryCustom;
+
 	/**
 	 * 할 일 추가
 	 */
@@ -54,12 +60,13 @@ public class TeamTaskService {
 	/**
 	 * 할 일 목록 조회
 	 */
-	public List<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId) {
+	public Page<TaskResponseDto> getAllTasksByTeamId(Long memberId, Long teamId, Pageable pageable) {
 		validateMemberTeamAccess(memberId, teamId);
 
-		return taskRepository.findTeamTasks(teamId).stream()
-				.map(TaskMapper::toTaskResponseDto)
-				.toList();
+		return taskRepository.findTeamTasks(teamId, pageable).map(
+				task -> new TaskResponseDto(task.getId(), task.getContent(), task.isDone(), task.getDeadline(),
+						task.isFlag(), task.getCreatedAt())
+		);
 	}
 
 	/**
@@ -119,6 +126,29 @@ public class TeamTaskService {
 		if (!teamMemberRepository.existsByMemberIdAndTeamId(memberId, teamId)) {
 			throw new ForbiddenException("이 팀에 접근할 권한이 없습니다.");
 		}
+	}
+
+	/**
+	 * 팀 할 일 조건 별로 선택된 정렬 조회
+	 */
+	public Page<TaskResponseDto> filterTask(Long memberId, Pageable pageable, Long teamId,
+			LocalDate startDate, LocalDate endDate, LocalDateTime deadline,
+			Boolean flag, LocalDate createdAt, Boolean done, String keyword) {
+		if (teamId != null) {
+			validateMemberTeamAccess(memberId, teamId);
+		}
+
+		Page<Task> tasks = taskRepositoryCustom.TaskFilter(
+				memberId, pageable, teamId, startDate, endDate, deadline, flag, createdAt, done, keyword);
+
+		return tasks.map(task -> new TaskResponseDto(
+				task.getId(),
+				task.getContent(),
+				task.isDone(),
+				task.getDeadline(),
+				task.isFlag(),
+				task.getCreatedAt()
+		));
 	}
 
 }
