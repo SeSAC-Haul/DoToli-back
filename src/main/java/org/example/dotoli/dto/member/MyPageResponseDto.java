@@ -1,5 +1,10 @@
 package org.example.dotoli.dto.member;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.example.dotoli.dto.invitation.PendingInvitationDto;
+
 import lombok.Data;
 
 /**
@@ -18,12 +23,15 @@ public class MyPageResponseDto {
 
 	private Long achievementRate;
 
+	private List<PendingInvitationDto> invitations;
+
 	public MyPageResponseDto(
-			Long totalTaskCount, Long completedTaskCount, Long achievementRate
+			Long totalTaskCount, Long completedTaskCount, Long achievementRate, List<PendingInvitationDto> invitations
 	) {
 		this.totalTaskCount = totalTaskCount;
 		this.completedTaskCount = completedTaskCount;
 		this.achievementRate = achievementRate;
+		this.invitations = invitations;
 	}
 
 	public void setMemberInfo(String email, String nickname) {

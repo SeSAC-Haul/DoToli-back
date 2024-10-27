@@ -1,6 +1,10 @@
 package org.example.dotoli.service;
 
+import java.util.List;
+
+import org.example.dotoli.dto.invitation.PendingInvitationDto;
 import org.example.dotoli.dto.member.MyPageResponseDto;
+import org.example.dotoli.repository.InvitationRepository;
 import org.example.dotoli.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +21,8 @@ public class MyPageService {
 
 	private final TaskRepository taskRepository;
 
+	private final InvitationRepository invitationRepository;
+
 	/**
 	 * 사용자 ID에 해당하는 마이페이지 정보를 MyPageResponseDto에 담아 반환
 	 */
@@ -24,8 +30,10 @@ public class MyPageService {
 		Long totalTasksCount = taskRepository.countAllTasksByMemberId(memberId);
 		Long completedTasksCount = taskRepository.countCompletedTasksByMemberId(memberId);
 		Long completionRate = calculateCompletionRate(totalTasksCount, completedTasksCount);
+		List<PendingInvitationDto> pendingInvitationDtos
+				= invitationRepository.findPendingInvitationsByInviteeId(memberId);
 
-		return new MyPageResponseDto(totalTasksCount, completedTasksCount, completionRate);
+		return new MyPageResponseDto(totalTasksCount, completedTasksCount, completionRate, pendingInvitationDtos);
 	}
 
 	/**
