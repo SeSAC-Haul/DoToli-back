@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InvitationRequestDto {
 
-	private Long inviteeId;
+	private String inviteeEmail;
 
 }
