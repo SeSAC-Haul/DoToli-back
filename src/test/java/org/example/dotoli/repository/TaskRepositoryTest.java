@@ -8,6 +8,8 @@ import org.example.dotoli.domain.Task;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 
 @DataJpaTest
@@ -23,7 +25,7 @@ class TaskRepositoryTest {
 		Long teamId = 1L;
 
 		// when
-		List<Task> teamTasks = taskRepository.findTeamTasks(teamId);
+		Page<Task> teamTasks = taskRepository.findTeamTasks(teamId, Pageable.unpaged());
 
 		// then
 		assertThat(teamTasks).hasSize(3);
@@ -37,13 +39,15 @@ class TaskRepositoryTest {
 		Long teamId = 1L;
 
 		// when
-		List<Task> teamTasks = taskRepository.findTeamTasks(teamId);
+		Page<Task> teamTasks = taskRepository.findTeamTasks(teamId, Pageable.unpaged());
+		List<Task> taskList = teamTasks.get()
+				.toList();
 
 		// then
 		assertThat(teamTasks).isNotEmpty();
-		assertThat(teamTasks.get(0).isDone()).isFalse();
-		assertThat(teamTasks.get(1).isDone()).isFalse();
-		assertThat(teamTasks.get(2).isDone()).isTrue();
+		assertThat(taskList.get(0).isDone()).isFalse();
+		assertThat(taskList.get(1).isDone()).isFalse();
+		assertThat(taskList.get(2).isDone()).isTrue();
 	}
 
 	@Test
@@ -52,17 +56,18 @@ class TaskRepositoryTest {
 		Long teamId = 1L;
 
 		// when
-		List<Task> teamTasks = taskRepository.findTeamTasks(teamId);
+		Page<Task> teamTasks = taskRepository.findTeamTasks(teamId, Pageable.unpaged());
+		List<Task> taskList = teamTasks.get()
+				.toList();
 
 		// then
 		assertThat(teamTasks).isNotEmpty();
-		assertThat(teamTasks).isSortedAccordingTo((t1, t2) -> {
+		assertThat(taskList).isSortedAccordingTo((t1, t2) -> {
 			if (t1.isDone() != t2.isDone()) {
 				return Boolean.compare(t1.isDone(), t2.isDone());
 			}
 			return t2.getCreatedAt().compareTo(t1.getCreatedAt());
 		});
 	}
-
 
 }
