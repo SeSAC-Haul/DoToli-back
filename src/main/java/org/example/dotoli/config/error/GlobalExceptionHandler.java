@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,12 @@ public class GlobalExceptionHandler {
 		log.error("Business exception occurred: {}", e.getMessage(), e);
 		ErrorResponse errorResponse = ErrorResponse.of(e.getErrorCode(), e.getMessage());
 		return new ResponseEntity<>(errorResponse, e.getErrorCode().getStatus());
+	}
+
+	@ExceptionHandler(NoResourceFoundException.class)
+	protected ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException e) {
+		ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.NO_RESOURCE_FOUND, e.getMessage());
+		return new ResponseEntity<>(errorResponse, ErrorCode.NO_RESOURCE_FOUND.getStatus());
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
