@@ -40,6 +40,7 @@ public class SecurityConfig {
 						authorize -> authorize
 								.requestMatchers("/api/auth/**").permitAll()
 								.requestMatchers("/ws/**").permitAll()
+								.requestMatchers("/health/**").permitAll() // Spring Boot Actuator 사용 권장
 								.anyRequest().authenticated()
 				)
 				.sessionManagement(
