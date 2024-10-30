@@ -28,8 +28,8 @@ public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-	@Value("${app.frontend.base-url}")
-	private String frontendBaseUrl;
+	@Value("#{${app.frontend.base-urls}}")
+	private List<String> frontendBaseUrls;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -64,7 +64,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of(frontendBaseUrl)); // 프론트엔드 URL
+		configuration.setAllowedOrigins(frontendBaseUrls); // 프론트엔드 URL
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 

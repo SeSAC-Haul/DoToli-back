@@ -1,5 +1,7 @@
 package org.example.dotoli.config.websocket;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -17,13 +19,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 	private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
-	@Value("${app.frontend.base-url}")
-	private String frontendBaseUrl;
+	@Value("#{${app.frontend.base-urls}}")
+	private List<String> frontendBaseUrls;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(taskWebSocketHandler, "/ws/tasks/{teamId}")
-				.setAllowedOrigins(frontendBaseUrl)
+				.setAllowedOrigins(frontendBaseUrls.toArray(new String[0]))
 				.addInterceptors(webSocketAuthInterceptor);
 	}
 

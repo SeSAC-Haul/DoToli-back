@@ -2,6 +2,7 @@ package org.example.dotoli.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.example.dotoli.dto.auth.SignInRequestDto;
@@ -36,8 +37,8 @@ public class AuthenticationController {
 
 	private final JwtProvider jwtProvider;
 
-	@Value("${app.frontend.base-url}")
-	private String frontendBaseUrl;
+	@Value("#{${app.frontend.base-urls}}")
+	private List<String> frontendBaseUrls;
 
 	@PostMapping("/signup")
 	public ResponseEntity<Long> signUp(@RequestBody @Valid SignUpRequestDto dto) {
@@ -77,9 +78,9 @@ public class AuthenticationController {
 	public void verifyEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
 		try {
 			authenticationService.verifyEmailToken(token);
-			response.sendRedirect(frontendBaseUrl + "/email-verified?status=success");
+			response.sendRedirect(frontendBaseUrls.get(0) + "/email-verified?status=success");
 		} catch (IllegalArgumentException e) {
-			response.sendRedirect(frontendBaseUrl + "/email-verified?status=failure&message=" + e.getMessage());
+			response.sendRedirect(frontendBaseUrls.get(0) + "/email-verified?status=failure&message=" + e.getMessage());
 		}
 	}
 
