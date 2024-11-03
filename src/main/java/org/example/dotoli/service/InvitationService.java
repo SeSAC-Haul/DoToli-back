@@ -4,6 +4,7 @@ import org.example.dotoli.config.error.exception.DuplicateInvitationException;
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.InvitationNotFoundException;
 import org.example.dotoli.config.error.exception.MemberAlreadyInTeamException;
+import org.example.dotoli.config.error.exception.MemberNotFoundException;
 import org.example.dotoli.config.error.exception.TeamNotFoundException;
 import org.example.dotoli.domain.Invitation;
 import org.example.dotoli.domain.InvitationStatus;
@@ -38,11 +39,11 @@ public class InvitationService {
 	 */
 	@Transactional
 	public Long createInvitation(InvitationRequestDto dto, Long inviterId, Long teamId) {
-		Long inviteeId = dto.getInviteeId();
+		Member invitee = memberRepository.findByEmail(dto.getInviteeEmail())
+				.orElseThrow(MemberNotFoundException::new);
 
-		validateInvitation(inviterId, teamId, inviteeId);
+		validateInvitation(inviterId, teamId, invitee.getId());
 
-		Member invitee = memberRepository.getReferenceById(inviteeId);
 		Member inviter = memberRepository.getReferenceById(inviterId);
 		Team team = teamRepository.getReferenceById(teamId);
 

@@ -12,6 +12,7 @@ import org.example.dotoli.dto.auth.SignUpRequestDto;
 import org.example.dotoli.repository.EmailTokenRepository;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +43,9 @@ public class AuthenticationService {
 	private final EmailTokenRepository emailTokenRepository;
 
 	private final JavaMailSender mailSender;
+
+	@Value("${app.backend.base-url}")
+	private String backendBaseUrl;
 
 	/**
 	 * 회원가입
@@ -86,7 +90,7 @@ public class AuthenticationService {
 		EmailToken emailToken = new EmailToken(email, token, LocalDateTime.now().plusHours(1), false);
 		emailTokenRepository.save(emailToken);
 
-		String verificationLink = "http://localhost:8080/api/auth/verify?token=" + token;
+		String verificationLink = backendBaseUrl + "/api/auth/verify?token=" + token;
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		try {

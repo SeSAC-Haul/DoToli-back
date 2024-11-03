@@ -5,12 +5,14 @@ import java.time.LocalDateTime;
 
 import org.example.dotoli.config.error.exception.ForbiddenException;
 import org.example.dotoli.config.error.exception.TaskNotFoundException;
+import org.example.dotoli.config.websocket.TaskWebSocketHandler;
 import org.example.dotoli.domain.Member;
 import org.example.dotoli.domain.Task;
 import org.example.dotoli.domain.Team;
 import org.example.dotoli.dto.task.TaskRequestDto;
 import org.example.dotoli.dto.task.TaskResponseDto;
 import org.example.dotoli.dto.task.ToggleRequestDto;
+import org.example.dotoli.dto.websocket.TaskWebSocketMessage;
 import org.example.dotoli.mapper.TaskMapper;
 import org.example.dotoli.repository.MemberRepository;
 import org.example.dotoli.repository.TaskRepository;
@@ -42,6 +44,8 @@ public class TeamTaskService {
 
 	private final TaskRepositoryCustom taskRepositoryCustom;
 
+	private final TaskWebSocketHandler webSocketHandler;
+
 	/**
 	 * 할 일 추가
 	 */
@@ -53,8 +57,11 @@ public class TeamTaskService {
 		Team team = teamRepository.getReferenceById(teamId);
 
 		Task task = Task.createTeamTask(dto.getContent(), member, dto.getDeadline(), dto.isFlag(), team);
+		Long taskId = taskRepository.save(task).getId();
 
-		return taskRepository.save(task).getId();
+		broadcastTaskUpdate("CREATE", teamId, task, memberId);
+
+		return taskId;
 	}
 
 	/**
@@ -94,6 +101,8 @@ public class TeamTaskService {
 		task.updateContent(dto.getContent());
 		task.updateDeadline(dto.getDeadline());
 		task.updateFlag(dto.isFlag());
+
+		broadcastTaskUpdate("UPDATE", teamId, task, memberId);
 	}
 
 	/**
@@ -107,6 +116,8 @@ public class TeamTaskService {
 				.orElseThrow(TaskNotFoundException::new);
 
 		taskRepository.delete(task);
+
+		broadcastTaskUpdate("DELETE", teamId, task, memberId);
 	}
 
 	/**
@@ -120,6 +131,7 @@ public class TeamTaskService {
 				.orElseThrow(TaskNotFoundException::new);
 
 		task.updateDone(dto.isDone());
+		broadcastTaskUpdate("UPDATE", teamId, task, memberId);
 	}
 
 	private void validateMemberTeamAccess(Long memberId, Long teamId) {
@@ -149,6 +161,22 @@ public class TeamTaskService {
 				task.isFlag(),
 				task.getCreatedAt()
 		));
+	}
+
+	private void broadcastTaskUpdate(String type, Long teamId, Task task, Long memberId) {
+		Member member = memberRepository.getReferenceById(memberId);
+		TaskWebSocketMessage message = new TaskWebSocketMessage();
+		message.setType(type);
+		message.setTeamId(teamId);
+		message.setEmail(member.getEmail());
+
+		if ("DELETE".equals(type)) {
+			message.setTaskId(task.getId());
+		} else {
+			message.setTask(TaskMapper.toTaskResponseDto(task));
+		}
+
+		webSocketHandler.broadcastTaskUpdate(message);
 	}
 
 }

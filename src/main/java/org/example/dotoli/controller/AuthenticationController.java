@@ -2,6 +2,7 @@ package org.example.dotoli.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.example.dotoli.dto.auth.SignInRequestDto;
@@ -10,6 +11,7 @@ import org.example.dotoli.dto.auth.SignUpRequestDto;
 import org.example.dotoli.security.jwt.JwtProvider;
 import org.example.dotoli.security.userdetails.CustomUserDetails;
 import org.example.dotoli.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +36,9 @@ public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
 	private final JwtProvider jwtProvider;
+
+	@Value("#{${app.frontend.base-urls}}")
+	private List<String> frontendBaseUrls;
 
 	@PostMapping("/signup")
 	public ResponseEntity<Long> signUp(@RequestBody @Valid SignUpRequestDto dto) {
@@ -73,9 +78,9 @@ public class AuthenticationController {
 	public void verifyEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
 		try {
 			authenticationService.verifyEmailToken(token);
-			response.sendRedirect("http://localhost:5173/email-verified?status=success");
+			response.sendRedirect(frontendBaseUrls.get(0) + "/email-verified?status=success");
 		} catch (IllegalArgumentException e) {
-			response.sendRedirect("http://localhost:5173/email-verified?status=failure&message=" + e.getMessage());
+			response.sendRedirect(frontendBaseUrls.get(0) + "/email-verified?status=failure&message=" + e.getMessage());
 		}
 	}
 
