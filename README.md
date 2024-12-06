@@ -165,6 +165,6 @@ _이 문제 해결을 통해 CloudFront를 통한 SPA 배포 시 Error Pages 설
 | 이름 | 역할 | 기여 내용 | GitHub |
 |:---:|:---:|:---|:---:|
 | 오찬근 | 팀장 | • 프로젝트 총괄<br>• 기술 스택 설계 | https://github.com/Chan-GN |
-| 임진희 | 기술 개발 |  | https://github.com/liimjiin |
-| 임혜린 | 기술 개발 |  | https://github.com/hyerin315 |
-| 박종호 | 기술 개발 |  | https://github.com/cuteJJong |
+| 임진희 | 기술 개발 | • 마이페이지 설계 및 구현<br>• 이메일 인증 기능 구현 | https://github.com/liimjiin |
+| 임혜린 | 기술 개발 | • 할 일 관리 시스템 구현<br>• 실시간 통신 기능 개발 | https://github.com/hyerin315 |
+| 박종호 | 기술 개발 | • 검색 시스템 구현<br>• 페이지네이션 기능 개발 | https://github.com/cuteJJong |
