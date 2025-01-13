@@ -1,5 +1,5 @@
 
-# 🌰 협업하는 도토리
+# 🌰 협업하는 도토리 (DOTOLI:TODO-LIST)
 
 프로젝트 기간: 2024.10.03 ~ 2024.10.29
 
@@ -10,7 +10,7 @@
 ### 📚 [Haul Notion 보러가기](https://www.notion.so/11038cc0d0e9801e9702e1b4fa1393f9?pvs=4)
 <br />
 
-# :globe_with_meridians:인프라 아키텍처
+# :globe_with_meridians: 인프라 아키텍처
 <p align="center">
   <img src="https://github.com/user-attachments/assets/2aba6dc9-1a6d-4abf-b5b5-8190a610971a" alt="architecture">
 </p>
